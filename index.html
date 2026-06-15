@@ -372,7 +372,7 @@ const LEVELS_DATA = [
     subtitle: "Genere & Strumenti",
     badge: "LYRIA 3.5 // BEST PRACTICE #1",
     scenario: "Il team vuole creare l'inno aziendale ma i colleghi usano prompt vaghi che producono output generici e inutilizzabili. Zally Metal deve correggere il tiro prima che sia troppo tardi!",
-    question: "Per creare un vero sound Synth-Pop anni '80 con gli strumenti giusti, quale struttura di prompt rispetta le Best Practice di Lyria 3.5?",
+    question: "Per ottenere un sound preciso e con gli strumenti giusti, quale struttura di prompt rispetta le Best Practice di Lyria 3.5?",
     options: [
       "\"Un brano rock con ritmo incalzante e una tastiera.\"",
       "\"Un brano synth-pop in stile anni '80 con un ritmo incalzante a 120 BPM, sintetizzatori brillanti, atmosfera retro-futuristica e un assolo di sassofono nel bridge.\"",
@@ -488,26 +488,20 @@ const LEVELS_DATA = [
     promptLabel: "PROMPT SBLOCCATO — LEVEL 4 (BOSS):",
     unlockedPrompt: "Vocal persona: Weathered Rocker (uomo), voce roca e ruvida, timbro granuloso, vibrato controllato.\nModel: lyria-3-clip-preview\n→ Test rapido 30 sec → Affina prompt vocale\n→ Versione finale: lyria-3 completo",
     notePattern: [
-      {l:0,t:1200},
-      {l:1,t:2000},
-      {l:2,t:2800},
-      {l:0,t:3400},{l:1,t:3800},
-      {l:2,t:4500},
-      {l:0,t:5200},
-      {l:1,t:5700},{l:2,t:6000},
-      {l:0,t:6700},
-      {l:1,t:7400},
-      {l:2,t:7900},{l:0,t:8200},
-      {l:1,t:8900},
-      {l:2,t:9600},
-      {l:0,t:10100},{l:1,t:10400},
-      {l:2,t:11000},
-      {l:0,t:11700},
-      {l:1,t:12200},{l:2,t:12500},
-      {l:0,t:13200},
-      {l:1,t:13900},
-      {l:2,t:14400},{l:0,t:14700},
-      {l:1,t:15400},
+      {l:0,t:1500},
+      {l:1,t:2500},
+      {l:2,t:3500},
+      {l:0,t:4500},
+      {l:1,t:5500},
+      {l:2,t:6500},
+      {l:0,t:7500},
+      {l:1,t:8500},
+      {l:2,t:9500},
+      {l:0,t:10500},
+      {l:1,t:11500},
+      {l:2,t:12500},
+      {l:0,t:13500},
+      {l:1,t:14500},
     ]
   }
 ];
@@ -641,9 +635,9 @@ const LANES = [
 const LANE_W      = 80;
 const NOTE_R      = 24;
 const TRIGGER_Y   = 500;
-const TRAVEL_MS   = 2400;  // slower notes (was 2000)
-const HIT_WINDOW  = 160;   // more forgiving (was 90ms)
-const GAME_DUR    = 18000; // 18 sec gameplay
+const TRAVEL_MS   = 2600;  // slower notes = more reaction time
+const HIT_WINDOW  = 260;   // very forgiving timing window
+const GAME_DUR    = 16000; // 16 sec gameplay
 
 // ═══════════════════════════════════════════════
 //  GAME STATE
@@ -654,8 +648,8 @@ const game = {
   score: 0,
   totalScore: 0,
   starPower: 0,
-  volumeMix: 5,
-  maxVol: 5,
+  volumeMix: 10,
+  maxVol: 10,
   maxStar: 100,
   notes: [],
   gameStart: 0,
@@ -1313,8 +1307,8 @@ function renderGameplay(ts) {
       if (!n.missed && el > n.hitTime + HIT_WINDOW + 100) {
         n.missed = true;
         playMiss();
-        game.volumeMix = Math.max(0, game.volumeMix - 1);
-        game.starPower = Math.max(0, game.starPower - 8);
+        game.volumeMix = Math.max(0, game.volumeMix - 0.5);
+        game.starPower = Math.max(0, game.starPower - 4);
         game.flashFx = { col: 'rgba(255,0,50,0.25)', a: 0.25 };
         updateHUD();
         if (game.volumeMix <= 0 && !game.levelDone) {
@@ -1415,7 +1409,6 @@ function showQuestion(lvIdx) {
   modalContent.innerHTML = `
     <div class="modal-badge">${lv.badge}</div>
     <div class="modal-title">LEVEL ${lv.number}: ${lv.title} — ${lv.subtitle}</div>
-    <div class="modal-scenario">🎸 SCENARIO: ${lv.scenario}</div>
     <div class="modal-question">❓ ${lv.question}</div>
     ${opts}
     <div style="font-size:5.5px;color:#444;margin-top:12px;text-align:center;line-height:2;">
@@ -1478,7 +1471,7 @@ function startGameplay() {
   touchControls.classList.add('active');
   game.screen = 'PLAYING';
   game.score = 0;
-  game.volumeMix = 5;
+  game.volumeMix = 10;
   game.starPower = 0;
   game.levelDone = false;
   game.flashFx = null;
@@ -1524,7 +1517,7 @@ function resetGame() {
   game.score = 0;
   game.totalScore = 0;
   game.starPower = 0;
-  game.volumeMix = 5;
+  game.volumeMix = 10;
   game.notes = [];
   game.levelDone = false;
   game.flashFx = null;
