@@ -703,210 +703,33 @@ function drawBackground() {
   }
 }
 
-// ─── Zally Metal character ───────────────────────
-function drawZally(cx, cy, scale, t) {
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.scale(scale, scale);
+// ─── Zally Metal character (PNG sprite) ───────────
+const zallyImg = new Image();
+let zallyImgLoaded = false;
+zallyImg.onload = () => { zallyImgLoaded = true; };
+zallyImg.src = 'zally_metal.png';
 
+function drawZally(cx, cy, scale, t) {
   const bob = Math.sin(t * 0.0025) * 5;
-  const arm = Math.sin(t * 0.003);
-  ctx.translate(0, bob);
 
   // Shadow
   ctx.fillStyle = 'rgba(0,0,0,0.3)';
   ctx.beginPath();
-  ctx.ellipse(0, 100, 28, 8, 0, 0, Math.PI * 2);
+  ctx.ellipse(cx, cy + 100 * scale, 30 * scale, 9 * scale, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // Legs
-  ctx.fillStyle = '#0a0a1e';
-  ctx.fillRect(-19, 65, 14, 38);
-  ctx.fillRect(6, 65, 14, 38);
-  // Boots
-  ctx.fillStyle = '#1a1a1a';
-  ctx.fillRect(-22, 98, 18, 8);
-  ctx.fillRect(5, 98, 18, 8);
-  ctx.fillStyle = '#ff6600';
-  ctx.fillRect(-22, 103, 18, 3);
-  ctx.fillRect(5, 103, 18, 3);
+  if (!zallyImgLoaded) return;
 
-  // Body (leather jacket)
-  ctx.fillStyle = '#111128';
-  ctx.beginPath();
-  ctx.roundRect(-22, 12, 44, 56, 5);
-  ctx.fill();
-  // Jacket highlights
-  ctx.strokeStyle = '#222244';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(-10, 12);
-  ctx.lineTo(-10, 68);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(10, 12);
-  ctx.lineTo(10, 68);
-  ctx.stroke();
-  // Lightning bolt on jacket
-  ctx.fillStyle = '#ff6600';
-  ctx.beginPath();
-  ctx.moveTo(-4, 18);
-  ctx.lineTo(3, 36);
-  ctx.lineTo(-1, 36);
-  ctx.lineTo(6, 58);
-  ctx.lineTo(0, 44);
-  ctx.lineTo(4, 44);
-  ctx.lineTo(-4, 18);
-  ctx.fill();
-
-  // Left arm UP (lightbulb hand)
+  const baseH = 260;
+  const aspect = zallyImg.naturalWidth / zallyImg.naturalHeight;
+  const h = baseH * scale, w = h * aspect;
   ctx.save();
-  ctx.translate(-23, 22);
-  ctx.rotate(-0.7 + arm * 0.12);
-  ctx.fillStyle = '#e8b896';
-  ctx.fillRect(-6, -32, 12, 32);
-  ctx.restore();
-
-  // Lightbulb
-  const lbx = -46, lby = -20 + bob * 0.2;
-  // Outer glow
-  const lgrd = ctx.createRadialGradient(lbx, lby - 4, 0, lbx, lby - 4, 28);
-  lgrd.addColorStop(0, 'rgba(255,230,80,0.55)');
-  lgrd.addColorStop(0.5, 'rgba(255,180,0,0.2)');
-  lgrd.addColorStop(1, 'transparent');
-  ctx.fillStyle = lgrd;
-  ctx.beginPath();
-  ctx.arc(lbx, lby - 4, 28, 0, Math.PI * 2);
-  ctx.fill();
-  // Bulb glass
-  ctx.fillStyle = 'rgba(255,255,200,0.95)';
-  ctx.strokeStyle = '#ffdd00';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(lbx, lby - 7, 11, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-  // Base
-  ctx.fillStyle = '#999';
-  ctx.fillRect(lbx - 5, lby + 3, 10, 7);
-  ctx.fillStyle = '#777';
-  ctx.fillRect(lbx - 4, lby + 5, 8, 2);
-  // Filament glow lines
-  ctx.strokeStyle = 'rgba(255,140,0,0.8)';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(lbx - 3, lby - 2);
-  ctx.lineTo(lbx, lby - 8);
-  ctx.lineTo(lbx + 3, lby - 2);
-  ctx.stroke();
-  // Shine spot
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.beginPath();
-  ctx.arc(lbx - 3, lby - 10, 3, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Right arm (rock fist)
-  ctx.save();
-  ctx.translate(23, 22);
-  ctx.rotate(0.45 + arm * 0.1);
-  ctx.fillStyle = '#e8b896';
-  ctx.fillRect(-6, 0, 12, 28);
-  // Fist knuckles
-  ctx.fillStyle = '#d9a882';
-  ctx.beginPath();
-  ctx.roundRect(-7, 27, 14, 11, 3);
-  ctx.fill();
-  ctx.restore();
-
-  // Neck
-  ctx.fillStyle = '#e8b896';
-  ctx.fillRect(-6, -2, 12, 16);
-
-  // Head
-  ctx.fillStyle = '#e8b896';
-  ctx.beginPath();
-  ctx.ellipse(0, -16, 17, 19, 0, 0, Math.PI * 2);
-  ctx.fill();
-  // Stubble
-  ctx.fillStyle = 'rgba(80,40,20,0.25)';
-  ctx.beginPath();
-  ctx.ellipse(0, -5, 10, 6, 0, 0, Math.PI);
-  ctx.fill();
-
-  // Mohawk / Crest
-  const crests = [
-    {dx: -10, h: 24, col: '#ff0044'},
-    {dx: -5,  h: 32, col: '#ff6600'},
-    {dx:  0,  h: 36, col: '#ccff00'},
-    {dx:  5,  h: 30, col: '#ff6600'},
-    {dx: 10,  h: 22, col: '#ff0044'},
-  ];
-  crests.forEach(c => {
-    ctx.fillStyle = c.col;
-    ctx.beginPath();
-    ctx.moveTo(c.dx - 4, -30);
-    ctx.lineTo(c.dx, -30 - c.h);
-    ctx.lineTo(c.dx + 4, -30);
-    ctx.closePath();
-    ctx.fill();
-    // Tip glow
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
-    ctx.beginPath();
-    ctx.arc(c.dx, -30 - c.h + 2, 2, 0, Math.PI * 2);
-    ctx.fill();
-  });
-
-  // Eyes
-  ctx.fillStyle = '#1a0a00';
-  ctx.beginPath();
-  ctx.ellipse(-7, -18, 4, 4, -0.1, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(7, -18, 4, 4, 0.1, 0, Math.PI * 2);
-  ctx.fill();
-  // Pupils (intense)
-  ctx.fillStyle = '#ff4400';
-  ctx.beginPath();
-  ctx.arc(-7, -18, 2, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(7, -18, 2, 0, Math.PI * 2);
-  ctx.fill();
-  // Eye shine
-  ctx.fillStyle = '#fff';
-  ctx.beginPath();
-  ctx.arc(-6, -19, 1.2, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(8, -19, 1.2, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Eyebrows (angry/rock)
-  ctx.strokeStyle = '#3a1500';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(-12, -24);
-  ctx.lineTo(-4, -21);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(12, -24);
-  ctx.lineTo(4, -21);
-  ctx.stroke();
-
-  // Smirk / mouth
-  ctx.strokeStyle = '#8B4513';
-  ctx.lineWidth = 1.8;
-  ctx.beginPath();
-  ctx.moveTo(-5, -8);
-  ctx.quadraticCurveTo(2, -4, 8, -7);
-  ctx.stroke();
-  // Teeth
-  ctx.fillStyle = '#fffde0';
-  ctx.fillRect(-2, -8, 6, 3);
-
+  ctx.shadowBlur = 18;
+  ctx.shadowColor = 'rgba(255,102,0,0.5)';
+  ctx.drawImage(zallyImg, cx - w / 2, cy - h * 0.62 + bob, w, h);
   ctx.restore();
 }
+
 
 // ─── Lanes ───────────────────────────────────────
 function drawLanes() {
