@@ -810,6 +810,11 @@ let zallyImgLoaded = false;
 zallyImg.onload = () => { zallyImgLoaded = true; };
 zallyImg.src = 'zally_metal.png';
 
+const zallyJumpImg = new Image();
+let zallyJumpLoaded = false;
+zallyJumpImg.onload = () => { zallyJumpLoaded = true; };
+zallyJumpImg.src = 'zally_metal_jump.png';
+
 function drawZally(cx, cy, scale, t) {
   const bob = Math.sin(t * 0.0025) * 5;
 
@@ -1208,8 +1213,20 @@ function renderVictory(t) {
   ctx.font = '5.5px "Press Start 2P", monospace';
   ctx.fillText('CHALLENGE COMPLETED: "CREATE AN ANTHEM FOR THE TEAM"', W / 2, 305);
 
-  // Zally small
-  drawZally(W / 2, 450, 0.88, t);
+  // Zally Jump — bouncing celebration
+  if (zallyJumpLoaded) {
+    const aspect = zallyJumpImg.naturalWidth / zallyJumpImg.naturalHeight;
+    const h = 260, w = h * aspect;
+    // Bounce: fast up-down jump loop
+    const bounce = Math.abs(Math.sin(t * 0.004)) * 38;
+    // Subtle left-right sway
+    const sway = Math.sin(t * 0.0022) * 10;
+    // Glow pulse
+    ctx.shadowBlur = 20 + Math.sin(t * 0.005) * 12;
+    ctx.shadowColor = 'rgba(204,255,0,0.7)';
+    ctx.drawImage(zallyJumpImg, W / 2 - w / 2 + sway, 320 - bounce, w, h);
+    ctx.shadowBlur = 0;
+  }
 }
 
 function renderGameplay(ts) {
