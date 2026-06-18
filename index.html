@@ -551,46 +551,45 @@ const LEVELS_DATA = [
     hint: "💡 Il workflow ottimale per i profili vocali:\n• Definisci: estensione, timbro, stile (es. roca, granulosa)\n• Usa lyria-3-clip-preview per test rapidi a 30 secondi\n• Itera sul prompt vocale prima di spendere risorse\n• Solo dopo: passa a lyria-3 per la versione completa!\n• Human in the Loop: tu guidi, l'AI esegue!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 4 (BOSS):",
     unlockedPrompt: "Vocal persona: Weathered Rocker (uomo), voce roca e ruvida, timbro granuloso, vibrato controllato.\nModel: lyria-3-clip-preview\n→ Test rapido 30 sec → Affina prompt vocale\n→ Versione finale: lyria-3 completo",
-    // ♪ "Paranoid" inspired (Black Sabbath) — trasportato, riff veloce E minor
-    // Riff: E3-E3-E3-G3-A3-G3-E3 / D3-E3 (super riconoscibile)
-    // E3=165, G3=196, A3=220, D3=147
+    // ♪ "Thunderstruck" inspired (AC/DC) — trasportato, pattern iconico
+    // Il riff: A3 ripetuta con salti su B3 e G3 — gallop elettrico
+    // A3=220 (lane1), B3=247 (lane2), G3=196 (lane0), E3=165 (lane0)
     notePattern: [
-      // — Riff 1 —
-      {l:1,t:1000,f:165},  // E3
-      {l:1,t:1500,f:165},  // E3
-      {l:1,t:2000,f:165},  // E3
-      {l:2,t:2500,f:196},  // G3
-      {l:2,t:3000,f:220},  // A3
-      {l:1,t:3500,f:196},  // G3
-      {l:1,t:4000,f:165},  // E3
-      {l:0,t:4600,f:147},  // D3
-      {l:1,t:5100,f:165},  // E3
-      // — Riff 2 —
-      {l:1,t:6000,f:165},
-      {l:1,t:6500,f:165},
-      {l:1,t:7000,f:165},
-      {l:2,t:7500,f:196},
-      {l:2,t:8000,f:220},
-      {l:1,t:8500,f:196},
-      {l:1,t:9000,f:165},
-      {l:0,t:9600,f:147},
-      {l:1,t:10100,f:165},
-      // — Variazione con salita —
-      {l:1,t:11000,f:165},
-      {l:2,t:11500,f:196},
-      {l:2,t:12000,f:220},
-      {l:2,t:12500,f:247},  // B3 — più alto
-      {l:2,t:13000,f:220},
-      {l:1,t:13500,f:196},
-      {l:1,t:14000,f:165},
-      // — Finale martellante —
-      {l:1,t:15000,f:165},
-      {l:1,t:15500,f:165},
-      {l:1,t:16000,f:165},
-      {l:2,t:16500,f:196},
-      {l:2,t:17000,f:220},
-      {l:0,t:17500,f:147},
-      {l:1,t:18000,f:165},
+      // — Round 1: A-A-A-B-A-G-A-B-A-G —
+      {l:1,t:1000,f:220},  // A3
+      {l:1,t:1600,f:220},  // A3
+      {l:1,t:2200,f:220},  // A3
+      {l:2,t:2800,f:247},  // B3 ← salto su
+      {l:1,t:3400,f:220},  // A3
+      {l:0,t:4000,f:196},  // G3 ← salto giù
+      {l:1,t:4600,f:220},  // A3
+      {l:2,t:5200,f:247},  // B3
+      {l:1,t:5800,f:220},  // A3
+      {l:0,t:6400,f:196},  // G3
+      // — Round 2: stessa sequenza —
+      {l:1,t:7200,f:220},
+      {l:1,t:7800,f:220},
+      {l:1,t:8400,f:220},
+      {l:2,t:9000,f:247},  // B3
+      {l:1,t:9600,f:220},
+      {l:0,t:10200,f:196}, // G3
+      {l:1,t:10800,f:220},
+      {l:2,t:11400,f:247}, // B3
+      {l:1,t:12000,f:220},
+      {l:0,t:12600,f:196}, // G3
+      // — Round 3: variazione con discesa verso E3 —
+      {l:1,t:13400,f:220},
+      {l:1,t:14000,f:220},
+      {l:2,t:14600,f:247}, // B3
+      {l:1,t:15200,f:220},
+      {l:0,t:15800,f:196}, // G3
+      {l:0,t:16400,f:165}, // E3 ← discesa finale
+      {l:1,t:17000,f:220},
+      {l:2,t:17600,f:247}, // B3
+      {l:1,t:18200,f:220},
+      {l:0,t:18800,f:196}, // G3
+      {l:0,t:19400,f:165}, // E3
+      {l:1,t:20000,f:220}, // A3 — chiusura
     ]
   }
 ];
