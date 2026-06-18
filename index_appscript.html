@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ZALLY METAL – Lyria 3.5 Training Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #05050d;
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      color: #fff;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100vw;
+    }
+
+    #wrapper {
+      position: relative;
+      width: 800px;
+      height: 600px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 820px) {
+      #wrapper {
+        width: 100vw;
+        height: calc(100vw * 0.75);
+      }
+      canvas { width: 100% !important; height: auto !important; }
+    }
+
+    canvas {
+      display: block;
+      border: 3px solid #ff6600;
+      box-shadow:
+        0 0 20px rgba(255,102,0,0.8),
+        0 0 60px rgba(255,102,0,0.3),
+        inset 0 0 20px rgba(255,102,0,0.05);
+    }
+
+    /* ─── MODAL OVERLAY ─── */
+    #overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(5,5,13,0.93);
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      z-index: 50;
+      overflow-y: auto;
+      padding: 10px 0;
+    }
+    #overlay.active { display: flex; }
+
+    .modal {
+      background: #0d0d1f;
+      border: 3px solid #ff6600;
+      box-shadow:
+        0 0 30px rgba(255,102,0,0.5),
+        inset 0 0 30px rgba(255,102,0,0.04);
+      padding: 22px 26px 26px;
+      width: 756px;
+      max-width: calc(100vw - 10px);
+      position: relative;
+    }
+
+    .modal-badge {
+      display: inline-block;
+      background: #ff6600;
+      color: #000;
+      font-size: 7px;
+      padding: 5px 12px;
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+    }
+
+    .modal-title {
+      font-size: 13px;
+      color: #ccff00;
+      margin-bottom: 12px;
+      line-height: 1.6;
+      text-shadow: 0 0 12px rgba(204,255,0,0.5);
+    }
+
+    .modal-question {
+      font-size: 7.5px;
+      color: #fff;
+      line-height: 1.9;
+      margin-bottom: 16px;
+    }
+
+    .option-btn {
+      display: block;
+      width: 100%;
+      background: #13132a;
+      border: 2px solid #2a2a50;
+      color: #ccc;
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      font-size: 6px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      text-align: left;
+      line-height: 2;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #ff6600;
+      color: #fff;
+      background: #1a1a38;
+    }
+    .option-btn.correct {
+      border-color: #ccff00;
+      color: #ccff00;
+      background: #0d1a00;
+      box-shadow: 0 0 12px rgba(204,255,0,0.25);
+    }
+    .option-btn.wrong {
+      border-color: #ff0044;
+      color: #ff4466;
+      background: #1a0010;
+    }
+    .option-btn:disabled { cursor: default; }
+
+    .hint-box {
+      background: #0a1400;
+      border: 2px solid #ccff00;
+      border-left: 5px solid #ccff00;
+      padding: 12px 16px;
+      margin-top: 14px;
+      font-size: 6.5px;
+      color: #ccff00;
+      line-height: 2;
+    }
+
+    .unlock-box {
+      background: #110a00;
+      border: 2px solid #ff6600;
+      padding: 14px 16px;
+      margin-top: 14px;
+      font-size: 6.5px;
+      color: #ffbb66;
+      line-height: 2;
+    }
+    .unlock-box .unlock-label {
+      color: #ccff00;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .unlock-box .prompt-text {
+      color: #ffcc88;
+      display: block;
+      font-size: 6px;
+      line-height: 2.2;
+      border-left: 3px solid #ff6600;
+      padding-left: 12px;
+    }
+
+    .play-btn {
+      display: block;
+      width: 100%;
+      background: linear-gradient(135deg, #ff6600 0%, #cc4400 100%);
+      color: #000;
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      font-size: 11px;
+      padding: 16px;
+      margin-top: 18px;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 2px;
+      box-shadow: 0 0 25px rgba(255,102,0,0.6), 0 4px 0 #882200;
+      transition: all 0.15s;
+      position: relative;
+      top: 0;
+    }
+    .play-btn:hover {
+      background: linear-gradient(135deg, #ccff00 0%, #88bb00 100%);
+      box-shadow: 0 0 35px rgba(204,255,0,0.7), 0 4px 0 #446600;
+      top: -2px;
+    }
+    .play-btn:active { top: 2px; box-shadow: 0 1px 0 #882200; }
+
+    /* ─── HUD ─── */
+    #hud {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      display: none;
+    }
+    #hud.active { display: block; }
+
+    .hud-top {
+      position: absolute;
+      top: 12px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 18px;
+    }
+    .hud-score { font-size: 8px; color: #ccff00; text-shadow: 0 0 8px rgba(204,255,0,0.6); }
+    .hud-level { font-size: 8px; color: #ff6600; text-shadow: 0 0 8px rgba(255,102,0,0.6); }
+
+    .hud-bars {
+      position: absolute;
+      bottom: 78px;
+      left: 0; right: 0;
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+    }
+    .bar-container { text-align: center; }
+    .bar-label { font-size: 5px; color: #666; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+    .bar-track {
+      width: 130px; height: 10px;
+      background: #111;
+      border: 1px solid #333;
+      overflow: hidden;
+    }
+    .bar-fill { height: 100%; transition: width 0.12s ease; }
+    .bar-fill.volume { background: linear-gradient(90deg, #ff4400, #ff6600); box-shadow: 0 0 6px #ff6600; }
+    .bar-fill.star   { background: linear-gradient(90deg, #88cc00, #ccff00); box-shadow: 0 0 6px #ccff00; }
+
+    /* ─── VICTORY OVERLAY ─── */
+    #victoryOverlay {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 30px;
+      z-index: 60;
+      pointer-events: none;
+    }
+    #victoryOverlay.active { display: flex; }
+    #resetBtn {
+      pointer-events: all;
+      background: linear-gradient(135deg, #ff6600, #cc4400);
+      color: #000;
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      font-size: 9px;
+      padding: 14px 30px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(255,102,0,0.7);
+      letter-spacing: 2px;
+      transition: all 0.15s;
+    }
+    #resetBtn:hover {
+      background: linear-gradient(135deg, #ccff00, #99cc00);
+      box-shadow: 0 0 30px rgba(204,255,0,0.8);
+    }
+
+    /* ─── MOBILE TOUCH CONTROLS ─── */
+    #touchControls {
+      position: absolute;
+      bottom: 8px;
+      left: 0; right: 0;
+      display: none;
+      justify-content: center;
+      gap: 20px;
+      z-index: 40;
+      pointer-events: none;
+    }
+    #touchControls.active { display: flex; }
+    .touch-btn {
+      pointer-events: all;
+      width: 70px; height: 40px;
+      border: 2px solid;
+      background: rgba(0,0,0,0.6);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .touch-btn.lane0 { border-color: #ff6600; color: #ff6600; }
+    .touch-btn.lane1 { border-color: #ccff00; color: #ccff00; }
+    .touch-btn.lane2 { border-color: #00ffcc; color: #00ffcc; }
+    .touch-btn:active { opacity: 0.7; }
+  </style>
+</head>
+<body>
+
+<div id="wrapper">
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+  <!-- Question / Answer Modal -->
+  <div id="overlay">
+    <div class="modal" id="modalContent"></div>
+  </div>
+
+  <!-- HUD (shown during gameplay) -->
+  <div id="hud">
+    <div class="hud-top">
+      <div class="hud-score" id="hudScore">SCORE: 0</div>
+      <div class="hud-level" id="hudLevel">LEVEL 1</div>
+    </div>
+    <div class="hud-bars">
+      <div class="bar-container">
+        <span class="bar-label">VOLUME MIX</span>
+        <div class="bar-track"><div class="bar-fill volume" id="barVolume" style="width:100%"></div></div>
+      </div>
+      <div class="bar-container">
+        <span class="bar-label">STAR POWER</span>
+        <div class="bar-track"><div class="bar-fill star" id="barStar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Victory overlay with reset button -->
+  <div id="victoryOverlay">
+    <button id="resetBtn" onclick="resetGame()">↺ PLAY AGAIN</button>
+  </div>
+
+  <!-- Mobile touch controls -->
+  <div id="touchControls">
+    <button class="touch-btn lane0" ontouchstart="touchHit(0)" onmousedown="touchHit(0)">←</button>
+    <button class="touch-btn lane1" ontouchstart="touchHit(1)" onmousedown="touchHit(1)">↓</button>
+    <button class="touch-btn lane2" ontouchstart="touchHit(2)" onmousedown="touchHit(2)">→</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  CANVAS POLYFILL
+// ═══════════════════════════════════════════════
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    this.beginPath();
+    this.moveTo(x + r, y);
+    this.lineTo(x + w - r, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + r);
+    this.lineTo(x + w, y + h - r);
+    this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    this.lineTo(x + r, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r);
+    this.lineTo(x, y + r);
+    this.quadraticCurveTo(x, y, x + r, y);
+    this.closePath();
+    return this;
+  };
+}
+
+// ═══════════════════════════════════════════════
+//  LEVEL DATA
+// ═══════════════════════════════════════════════
+const LEVELS_DATA = [
+  {
+    id: 1,
+    number: "01",
+    title: "THE SOUND RECIPE",
+    subtitle: "Genre & Instruments",
+    badge: "LYRIA 3.5 // BEST PRACTICE #1",
+    scenario: "The YF&K team wants to create the company anthem, but colleagues are using vague prompts that produce generic, unusable outputs. Zally Metal must fix it before it's too late!",
+    question: "To get a precise sound with the right instruments, which prompt structure follows Lyria 3.5 Best Practices?",
+    options: [
+      "\"A rock track with a driving rhythm and a keyboard.\"",
+      "\"An '80s synth-pop track with a driving 120 BPM rhythm, bright synthesizers, retro-futuristic atmosphere and a saxophone solo in the bridge.\"",
+      "\"Modern electronic music with no classic instruments.\""
+    ],
+    correctIndex: 1,
+    hint: "💡 Vague prompts produce generic results. ALWAYS mention:\n• Musical genre\n• BPM (e.g. 120 BPM)\n• Era (e.g. the '80s)\n• Exact instruments\n• How these elements interact with each other.",
+    promptLabel: "UNLOCKED PROMPT — LEVEL 1:",
+    unlockedPrompt: "\"An '80s synth-pop track with a driving 120 BPM rhythm, bright synthesizers, retro-futuristic atmosphere and a saxophone solo in the bridge.\"",
+    // ♪ "Smoke on the Water" — F# minor
+    notePattern: [
+      {l:0,t:1500,f:185},{l:1,t:2100,f:220},{l:2,t:2700,f:247},
+      {l:0,t:3500,f:185},{l:1,t:4100,f:220},{l:2,t:4600,f:277},{l:2,t:5100,f:247},
+      {l:0,t:5900,f:185},{l:1,t:6500,f:220},{l:2,t:7100,f:247},{l:1,t:7700,f:220},{l:0,t:8300,f:185},
+      {l:0,t:9100,f:185},{l:1,t:9700,f:220},{l:2,t:10300,f:247},
+      {l:0,t:11100,f:185},{l:1,t:11700,f:220},{l:2,t:12200,f:277},{l:2,t:12700,f:247},
+      {l:0,t:13500,f:185},{l:1,t:14100,f:220},{l:2,t:14700,f:247},{l:1,t:15300,f:220},{l:0,t:15900,f:185},
+      {l:0,t:16700,f:185},{l:1,t:17300,f:220},{l:2,t:17900,f:247},{l:2,t:18500,f:277},{l:0,t:19100,f:185},
+    ]
+  },
+  {
+    id: 2,
+    number: "02",
+    title: "THE ENERGY FLOW",
+    subtitle: "Structure & Timestamps",
+    badge: "LYRIA 3.5 // BEST PRACTICE #2",
+    scenario: "The YF&K team anthem needs dynamic variations to create tension and release. We need an explosive crescendo and an epic drop at exactly the right moment. How do you control the temporal structure?",
+    question: "How can we force Lyria 3.5 to create a crescendo or start the chorus/drop at an exact point in time?",
+    options: [
+      "Use progression tags (e.g. [Intro] -> [Verse 1] -> [Chorus]) and define exact seconds in the text, like \"Create a drop at 12 seconds\" or \"The chorus starts at 22 seconds\".",
+      "Write the prompt repeating the word \"change\" many times to confuse the algorithm.",
+      "Change the key from major to minor halfway through the phrase inserted in the prompt."
+    ],
+    correctIndex: 0,
+    hint: "💡 Lyria 3.5 understands timelines in seconds!\nUse:\n• Structure tags: [Intro], [Verse 1], [Pre-Chorus], [Chorus]\n• Progression arrows: [A] -> [B] -> [C]\n• Explicit timing: \"Drop at 32 seconds\"\n• Energy descriptors: \"explosive crescendo\"",
+    promptLabel: "UNLOCKED PROMPT — LEVEL 2:",
+    unlockedPrompt: "[Intro] -> Tense atmosphere, 8 seconds -> [Verse 1] -> Building energy -> [Pre-Chorus] -> Drop at 32 seconds -> [Chorus] -> Rhythmic explosion with synth lead.",
+    // ♪ "Seven Nation Army" — key of D
+    notePattern: [
+      {l:1,t:1500,f:147},{l:0,t:2100,f:147},{l:2,t:2500,f:175},{l:1,t:3000,f:147},{l:0,t:3600,f:131},{l:1,t:4200,f:117},{l:2,t:5000,f:110},
+      {l:1,t:6000,f:147},{l:0,t:6600,f:147},{l:2,t:7000,f:175},{l:1,t:7500,f:147},{l:0,t:8100,f:131},{l:1,t:8700,f:117},{l:2,t:9500,f:110},
+      {l:0,t:10500,f:147},{l:1,t:11100,f:175},{l:2,t:11700,f:196},{l:1,t:12300,f:175},{l:0,t:12900,f:147},
+      {l:1,t:13700,f:147},{l:0,t:14300,f:147},{l:2,t:14700,f:175},{l:1,t:15200,f:147},{l:0,t:15800,f:131},{l:1,t:16400,f:117},{l:2,t:17200,f:110},
+      {l:0,t:18000,f:147},{l:1,t:18600,f:175},{l:2,t:19200,f:196},
+    ]
+  },
+  {
+    id: 3,
+    number: "03",
+    title: "THE LYRIC INJECTION",
+    subtitle: "Separation & Tags",
+    badge: "LYRIA 3.5 // BEST PRACTICE #3",
+    scenario: "It's time to insert the official YF&K anthem lyrics, focused on team efficiency and operational SOPs. Without correct formatting, the AI would sing the musical instructions!",
+    question: "To prevent the AI from singing the musical instructions or getting confused about the meter, what is the correct formatting syntax for lyrics in Lyria 3.5?",
+    options: [
+      "Paste the lyrics directly at the end of the prompt with no spaces or separators of any kind.",
+      "Separate the musical instructions using the \"Lyrics:\" prefix, insert section tags like [Verse 1] or [Chorus] and use round brackets () for backing vocals/echoes.",
+      "Write the words all in UPPERCASE to make the AI understand they are song lyrics."
+    ],
+    correctIndex: 1,
+    hint: "💡 The correct structure requires:\n• \"Lyrics:\" prefix to separate the text\n• Section tags: [Verse 1], [Chorus], [Bridge]\n• Round brackets for backing vocals/echoes: (YF&K!)\n• Musical instructions BEFORE the lyrics\n• The model reads the two parts separately!",
+    promptLabel: "UNLOCKED PROMPT — LEVEL 3:",
+    unlockedPrompt: "Energetic synth-rock track, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
+    // ♪ "Basket Case" (Green Day) — Eb-Bb-C-G-Ab-Eb-Bb
+    // Eb3=156, Bb3=233, C4=262, G3=196, Ab3=208
+    notePattern: [
+      {l:0,t:1000,f:156},{l:1,t:1500,f:233},{l:2,t:2000,f:262},{l:0,t:2500,f:196},{l:1,t:3000,f:208},{l:0,t:3500,f:156},{l:1,t:4000,f:233},
+      {l:0,t:4700,f:156},{l:1,t:5200,f:233},{l:2,t:5700,f:262},{l:0,t:6200,f:196},{l:1,t:6700,f:208},{l:0,t:7200,f:156},{l:1,t:7700,f:233},
+      {l:0,t:8400,f:156},{l:1,t:8900,f:233},{l:2,t:9400,f:262},{l:0,t:9900,f:196},{l:1,t:10400,f:208},{l:0,t:10900,f:156},{l:1,t:11400,f:233},
+      {l:0,t:12100,f:156},{l:1,t:12600,f:233},{l:2,t:13100,f:262},{l:0,t:13600,f:196},{l:1,t:14100,f:208},{l:0,t:14600,f:156},{l:1,t:15100,f:233},
+      {l:0,t:15800,f:156},{l:1,t:16300,f:233},{l:2,t:16800,f:262},{l:0,t:17300,f:196},{l:1,t:17800,f:208},{l:0,t:18300,f:156},{l:1,t:18800,f:233},
+    ]
+  },
+  {
+    id: 4,
+    number: "04",
+    title: "BOSS BATTLE",
+    subtitle: "Vocal Persona & Iteration",
+    badge: "⚡ BOSS BATTLE — LYRIA 3.5 #4",
+    scenario: "BOSS BATTLE! The AI-generated voice sounds robotic and flat. We need a gritty rock vocalist for the YF&K anthem. But watch the team's time: every generation on Lyria Pro costs resources!",
+    question: "What is the Best Practice combination to define a detailed human vocal profile and test it quickly without wasting team resources?",
+    options: [
+      "Generically ask for \"a nice voice\" and immediately run the generation on the heavy Lyria Pro model.",
+      "Specify a precise profile (e.g. \"Weathered Rocker: rough voice with a grainy timbre\") and run rapid iteration with the \"lyria-3-clip-preview\" model (30 sec) before the full song.",
+      "Change the key to G Major hoping the voice automatically adapts to the desired style."
+    ],
+    correctIndex: 1,
+    hint: "💡 Optimal workflow for vocal profiles:\n• Define: range, timbre, style (e.g. rough, grainy)\n• Use lyria-3-clip-preview for quick 30-second tests\n• Iterate on the vocal prompt before spending resources\n• Only then: move to lyria-3 for the full version!\n• Human in the Loop: you guide, the AI executes!",
+    promptLabel: "UNLOCKED PROMPT — LEVEL 4 (BOSS):",
+    unlockedPrompt: "Vocal persona: Weathered Rocker (male), rough and raspy voice, grainy timbre, controlled vibrato.\nModel: lyria-3-clip-preview\n→ Quick 30-sec test → Refine vocal prompt\n→ Final version: full lyria-3",
+    // ♪ "Thunderstruck" (AC/DC) — A-A-B-A-B-A-G-A gallop
+    // A3=220 (lane1), B3=247 (lane2), G3=196 (lane0), D4=294 (lane2)
+    notePattern: [
+      {l:1,t:1000,f:220},{l:1,t:1500,f:220},{l:2,t:2000,f:247},{l:1,t:2500,f:220},{l:2,t:3000,f:247},{l:1,t:3500,f:220},{l:0,t:4000,f:196},{l:1,t:4500,f:220},
+      {l:1,t:5200,f:220},{l:1,t:5700,f:220},{l:2,t:6200,f:247},{l:1,t:6700,f:220},{l:2,t:7200,f:294},{l:1,t:7700,f:220},{l:0,t:8200,f:196},{l:1,t:8700,f:220},
+      {l:1,t:9400,f:220},{l:1,t:9900,f:220},{l:2,t:10400,f:247},{l:1,t:10900,f:220},{l:2,t:11400,f:247},{l:1,t:11900,f:220},{l:0,t:12400,f:196},{l:1,t:12900,f:220},
+      {l:1,t:13600,f:220},{l:1,t:14100,f:220},{l:2,t:14600,f:294},{l:1,t:15100,f:220},{l:2,t:15600,f:247},{l:1,t:16100,f:220},{l:0,t:16600,f:196},{l:1,t:17100,f:220},
+      {l:1,t:17800,f:220},{l:1,t:18300,f:220},{l:2,t:18800,f:247},{l:1,t:19300,f:220},{l:2,t:19800,f:247},{l:1,t:20300,f:220},{l:0,t:20800,f:196},{l:1,t:21300,f:220},
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════
+//  CANVAS & DOM
+// ═══════════════════════════════════════════════
+const canvas = document.getElementById('gameCanvas');
+const ctx    = canvas.getContext('2d');
+const W = 800, H = 600;
+
+const overlay       = document.getElementById('overlay');
+const modalContent  = document.getElementById('modalContent');
+const hudEl         = document.getElementById('hud');
+const hudScore      = document.getElementById('hudScore');
+const hudLevel      = document.getElementById('hudLevel');
+const barVolume     = document.getElementById('barVolume');
+const barStar       = document.getElementById('barStar');
+const victoryOverlay= document.getElementById('victoryOverlay');
+const touchControls = document.getElementById('touchControls');
+
+// ═══════════════════════════════════════════════
+//  AUDIO ENGINE — Electric Guitar (Web Audio API)
+// ═══════════════════════════════════════════════
+let audioCtx = null;
+
+function getAC() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function makeDistortionCurve(amount) {
+  const n = 512, curve = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = (i * 2) / n - 1;
+    curve[i] = ((Math.PI + amount) * x) / (Math.PI + amount * Math.abs(x));
+  }
+  return curve;
+}
+
+function playGuitar(freq, sustain = 0.28, vol = 0.55) {
+  try {
+    const ac = getAC();
+    const t = ac.currentTime;
+    const freqs = [freq, freq * 2, freq * 1.498];
+    const vols  = [1.0,  0.35,    0.55];
+
+    const masterGain = ac.createGain();
+    masterGain.gain.setValueAtTime(0.001, t);
+    masterGain.gain.linearRampToValueAtTime(vol, t + 0.008);
+    masterGain.gain.setValueAtTime(vol, t + 0.02);
+    masterGain.gain.exponentialRampToValueAtTime(0.001, t + sustain);
+
+    const waver = ac.createWaveShaper();
+    waver.curve = makeDistortionCurve(300);
+    waver.oversample = '4x';
+
+    const eq = ac.createBiquadFilter();
+    eq.type = 'peaking';
+    eq.frequency.value = 1800;
+    eq.gain.value = 8;
+    eq.Q.value = 1.2;
+
+    const hicut = ac.createBiquadFilter();
+    hicut.type = 'lowpass';
+    hicut.frequency.value = 5500;
+
+    waver.connect(eq);
+    eq.connect(hicut);
+    hicut.connect(masterGain);
+    masterGain.connect(ac.destination);
+
+    freqs.forEach((f, i) => {
+      const osc = ac.createOscillator();
+      const og  = ac.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.value = f;
+      osc.detune.value = (i === 0 ? -4 : i === 1 ? 6 : 0);
+      og.gain.value = vols[i];
+      osc.connect(og);
+      og.connect(waver);
+      osc.start(t);
+      osc.stop(t + sustain + 0.06);
+    });
+
+    const nBuf = ac.createBuffer(1, ac.sampleRate * 0.018, ac.sampleRate);
+    const nd = nBuf.getChannelData(0);
+    for (let j = 0; j < nd.length; j++) nd[j] = (Math.random() * 2 - 1) * Math.exp(-j / (ac.sampleRate * 0.004));
+    const nSrc = ac.createBufferSource();
+    nSrc.buffer = nBuf;
+    const nGain = ac.createGain();
+    nGain.gain.value = 0.15;
+    nSrc.connect(nGain);
+    nGain.connect(ac.destination);
+    nSrc.start(t);
+  } catch(e) {}
+}
+
+const LANE_FREQS = [110, 147, 196];
+
+function playHit(freq, perfect) {
+  playGuitar(freq, perfect ? 0.42 : 0.28, perfect ? 0.6 : 0.5);
+  if (perfect) {
+    try {
+      const ac = getAC();
+      const osc = ac.createOscillator();
+      const g = ac.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq * 4;
+      g.gain.setValueAtTime(0.12, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.25);
+      osc.connect(g); g.connect(ac.destination);
+      osc.start(); osc.stop(ac.currentTime + 0.28);
+    } catch(e) {}
+  }
+}
+
+function playMiss() {
+  try {
+    const ac = getAC();
+    const t = ac.currentTime;
+    const osc = ac.createOscillator();
+    const g = ac.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(80, t);
+    osc.frequency.exponentialRampToValueAtTime(40, t + 0.09);
+    g.gain.setValueAtTime(0.3, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+    const lp = ac.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 400;
+    osc.connect(lp); lp.connect(g); g.connect(ac.destination);
+    osc.start(t); osc.stop(t + 0.12);
+  } catch(e) {}
+}
+
+function playLevelComplete() {
+  [[110,0],[147,0.1],[196,0.2],[294,0.32],[392,0.44]].forEach(([f,d]) =>
+    setTimeout(() => playGuitar(f, 0.4, 0.5), d * 1000));
+}
+
+function playVictory() {
+  [[110,0],[147,0.08],[196,0.16],[220,0.24],[294,0.36],[392,0.5],[440,0.66],[392,0.82]].forEach(([f,d]) =>
+    setTimeout(() => playGuitar(f, 0.55, 0.55), d * 1000));
+}
+
+let beatInterval = null;
+function startBeat() {
+  stopBeat();
+  let tick = 0;
+  beatInterval = setInterval(() => {
+    if (game.screen !== 'PLAYING') { stopBeat(); return; }
+    const ac = getAC();
+
+    if (tick % 4 === 0 || tick % 4 === 2) {
+      try {
+        const buf = ac.createBuffer(1, ac.sampleRate * 0.18, ac.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++)
+          d[i] = Math.sin(2 * Math.PI * 55 * i / ac.sampleRate * Math.exp(-i/(ac.sampleRate*0.025))) *
+                 Math.exp(-i / (ac.sampleRate * 0.06));
+        const src = ac.createBufferSource(); src.buffer = buf;
+        const g = ac.createGain(); g.gain.value = 0.8;
+        src.connect(g); g.connect(ac.destination); src.start();
+      } catch(e) {}
+    }
+
+    if (tick % 4 === 1 || tick % 4 === 3) {
+      try {
+        const buf = ac.createBuffer(1, ac.sampleRate * 0.12, ac.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++)
+          d[i] = ((Math.random()*2-1) * 0.7 + Math.sin(2*Math.PI*220*i/ac.sampleRate) * 0.3) *
+                 Math.exp(-i / (ac.sampleRate * 0.035));
+        const src = ac.createBufferSource(); src.buffer = buf;
+        const g = ac.createGain(); g.gain.value = 0.55;
+        const hpf = ac.createBiquadFilter(); hpf.type='highpass'; hpf.frequency.value=200;
+        src.connect(hpf); hpf.connect(g); g.connect(ac.destination); src.start();
+      } catch(e) {}
+    }
+
+    try {
+      const buf = ac.createBuffer(1, ac.sampleRate * 0.04, ac.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i=0; i<d.length; i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(ac.sampleRate*0.012));
+      const src = ac.createBufferSource(); src.buffer = buf;
+      const hpf = ac.createBiquadFilter(); hpf.type='highpass'; hpf.frequency.value=8000;
+      const g = ac.createGain(); g.gain.value = tick%4===0||tick%4===2 ? 0.1 : 0.18;
+      src.connect(hpf); hpf.connect(g); g.connect(ac.destination); src.start();
+    } catch(e) {}
+
+    tick++;
+  }, 250);
+}
+
+function stopBeat() {
+  if (beatInterval) { clearInterval(beatInterval); beatInterval = null; }
+}
+
+// ═══════════════════════════════════════════════
+//  GAME CONFIG
+// ═══════════════════════════════════════════════
+const LANES = [
+  { x: 255, color: '#ff6600', shadowColor: 'rgba(255,102,0,0.6)',  key: 'ArrowLeft',  label: '←' },
+  { x: 400, color: '#ccff00', shadowColor: 'rgba(204,255,0,0.6)',  key: 'ArrowDown',  label: '↓' },
+  { x: 545, color: '#00ffcc', shadowColor: 'rgba(0,255,204,0.6)', key: 'ArrowRight', label: '→' },
+];
+const LANE_W      = 80;
+const NOTE_R      = 24;
+const TRIGGER_Y   = 500;
+const TRAVEL_MS   = 4200;
+const HIT_WINDOW  = 420;
+const GAME_DUR    = 24000;
+
+// ═══════════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════════
+const game = {
+  screen: 'MENU',
+  levelIndex: 0,
+  score: 0,
+  totalScore: 0,
+  starPower: 0,
+  volumeMix: 10,
+  maxVol: 10,
+  maxStar: 100,
+  notes: [],
+  gameStart: 0,
+  gameElapsed: 0,
+  levelDone: false,
+  transmitStart: 0,
+  bgParticles: [],
+  flashFx: null,
+  comboText: null,
+  keys: {},
+};
+
+// ═══════════════════════════════════════════════
+//  PARTICLES
+// ═══════════════════════════════════════════════
+function initParticles() {
+  game.bgParticles = [];
+  for (let i = 0; i < 50; i++) {
+    game.bgParticles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      sz: Math.random() * 1.8 + 0.3,
+      spd: Math.random() * 0.5 + 0.1,
+      a: Math.random() * 0.4 + 0.05,
+      col: Math.random() > 0.5 ? '#ff6600' : '#ccff00',
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  DRAW UTILITIES
+// ═══════════════════════════════════════════════
+function drawBackground() {
+  ctx.fillStyle = '#05050d';
+  ctx.fillRect(0, 0, W, H);
+  game.bgParticles.forEach(p => {
+    p.y -= p.spd;
+    if (p.y < 0) { p.y = H + 2; p.x = Math.random() * W; }
+    ctx.globalAlpha = p.a;
+    ctx.fillStyle = p.col;
+    ctx.fillRect(p.x, p.y, p.sz, p.sz);
+  });
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = 'rgba(0,0,0,0.1)';
+  for (let y = 0; y < H; y += 4) ctx.fillRect(0, y, W, 1);
+}
+
+// ─── Zally Metal character (PNG sprite from Drive) ───
+const zallyImg = new Image();
+let zallyImgLoaded = false;
+zallyImg.onload = () => { zallyImgLoaded = true; };
+zallyImg.src = '<?= zallyUrl ?>';
+
+const zallyJumpImg = new Image();
+let zallyJumpLoaded = false;
+zallyJumpImg.onload = () => { zallyJumpLoaded = true; };
+zallyJumpImg.src = '<?= zallyJumpUrl ?>';
+
+function drawZally(cx, cy, scale, t) {
+  const bob = Math.sin(t * 0.0025) * 5;
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + 100 * scale, 30 * scale, 9 * scale, 0, 0, Math.PI * 2);
+  ctx.fill();
+  if (!zallyImgLoaded) return;
+  const baseH = 220;
+  const aspect = zallyImg.naturalWidth / zallyImg.naturalHeight;
+  const h = baseH * scale, w = h * aspect;
+  ctx.save();
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.shadowBlur = 14;
+  ctx.shadowColor = 'rgba(255,102,0,0.5)';
+  ctx.drawImage(zallyImg, cx - w / 2, cy - h * 0.62 + bob, w, h);
+  ctx.restore();
+}
+
+function drawLanes() {
+  LANES.forEach(lane => {
+    const x = lane.x;
+    ctx.globalAlpha = 0.12;
+    ctx.fillStyle = lane.color;
+    ctx.fillRect(x - LANE_W / 2, 0, LANE_W, H);
+    ctx.globalAlpha = 1;
+    [x - LANE_W / 2, x + LANE_W / 2].forEach(ex => {
+      ctx.strokeStyle = lane.color;
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.25;
+      ctx.beginPath();
+      ctx.moveTo(ex, 0);
+      ctx.lineTo(ex, H);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    });
+    ctx.strokeStyle = lane.color;
+    ctx.lineWidth = 0.5;
+    ctx.globalAlpha = 0.08;
+    ctx.setLineDash([12, 18]);
+    ctx.beginPath();
+    ctx.moveTo(x, 80);
+    ctx.lineTo(x, TRIGGER_Y - 30);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+  });
+}
+
+function drawTrigger(keys) {
+  LANES.forEach((lane, i) => {
+    const x = lane.x;
+    const active = keys[lane.key];
+    if (active) {
+      const grd = ctx.createRadialGradient(x, TRIGGER_Y, 0, x, TRIGGER_Y, LANE_W / 2 + 8);
+      grd.addColorStop(0, lane.color + 'aa');
+      grd.addColorStop(1, 'transparent');
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(x, TRIGGER_Y, LANE_W / 2 + 8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.strokeStyle = lane.color;
+    ctx.lineWidth = active ? 4 : 2;
+    ctx.globalAlpha = active ? 1 : 0.45;
+    ctx.shadowBlur = active ? 14 : 0;
+    ctx.shadowColor = lane.color;
+    ctx.beginPath();
+    ctx.arc(x, TRIGGER_Y, NOTE_R + 8, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = active ? lane.color : '#0d0d1f';
+    ctx.globalAlpha = active ? 0.9 : 0.4;
+    ctx.beginPath();
+    ctx.arc(x, TRIGGER_Y, NOTE_R + 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 0.8;
+    ctx.fillStyle = lane.color;
+    ctx.font = 'bold 13px "Press Start 2P", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(lane.label, x, TRIGGER_Y + 5);
+    ctx.globalAlpha = 1;
+  });
+}
+
+function drawNotes() {
+  game.notes.forEach(n => {
+    if (!n.spawned || n.missed) return;
+    const lane = LANES[n.lane];
+    if (n.hit) {
+      const a = 1 - n.hitAnim / 22;
+      const sc = 1 + n.hitAnim / 8;
+      ctx.globalAlpha = a;
+      ctx.strokeStyle = lane.color;
+      ctx.lineWidth = 3;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = lane.color;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, NOTE_R * sc, 0, Math.PI * 2);
+      ctx.stroke();
+      for (let s = 0; s < 8; s++) {
+        const ang = (s / 8) * Math.PI * 2;
+        const d = NOTE_R * sc * 1.4;
+        ctx.fillStyle = lane.color;
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(n.x + Math.cos(ang) * d, n.y + Math.sin(ang) * d, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+      n.hitAnim++;
+      if (n.hitAnim > 22) n.spawned = false;
+      return;
+    }
+    const hrd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, NOTE_R + 14);
+    hrd.addColorStop(0, lane.color + '55');
+    hrd.addColorStop(1, 'transparent');
+    ctx.fillStyle = hrd;
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, NOTE_R + 14, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = lane.color;
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = lane.color;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, NOTE_R, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(255,255,255,0.28)';
+    ctx.beginPath();
+    ctx.arc(n.x - NOTE_R * 0.28, n.y - NOTE_R * 0.3, NOTE_R * 0.38, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, NOTE_R, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+}
+
+function drawFX() {
+  if (game.flashFx) {
+    ctx.fillStyle = game.flashFx.col;
+    ctx.globalAlpha = game.flashFx.a;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+    game.flashFx.a -= 0.06;
+    if (game.flashFx.a <= 0) game.flashFx = null;
+  }
+  if (game.comboText) {
+    const ct = game.comboText;
+    ctx.globalAlpha = Math.max(0, 1 - ct.f / 28);
+    ctx.fillStyle = ct.col;
+    ctx.font = `${9 + ct.f * 0.25}px "Press Start 2P", monospace`;
+    ctx.textAlign = 'center';
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = ct.col;
+    ctx.fillText(ct.txt, ct.x, ct.y - ct.f * 1.8);
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+    ct.f++;
+    if (ct.f > 28) game.comboText = null;
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  SCREEN RENDERERS
+// ═══════════════════════════════════════════════
+function renderMenu(t) {
+  drawBackground();
+  LANES.forEach(lane => {
+    ctx.strokeStyle = lane.color;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.1;
+    ctx.beginPath();
+    ctx.moveTo(lane.x, 0);
+    ctx.lineTo(lane.x, H);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  });
+
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.beginPath();
+  ctx.roundRect(60, 30, 680, 185, 4);
+  ctx.fill();
+  ctx.strokeStyle = '#ff6600';
+  ctx.lineWidth = 2;
+  ctx.shadowBlur = 12;
+  ctx.shadowColor = '#ff6600';
+  ctx.beginPath();
+  ctx.roundRect(60, 30, 680, 185, 4);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = '#ff6600';
+  ctx.font = '34px "Press Start 2P", monospace';
+  ctx.textAlign = 'center';
+  ctx.shadowBlur = 25;
+  ctx.shadowColor = '#ff6600';
+  ctx.fillText('ZALLY METAL', W / 2, 100);
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = '#ccff00';
+  ctx.font = '8px "Press Start 2P", monospace';
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = '#ccff00';
+  ctx.fillText('LYRIA 3.5 TRAINING GAME', W / 2, 138);
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = '#ff6600';
+  ctx.font = '6.5px "Press Start 2P", monospace';
+  ctx.fillText('★  YF&K OPERATIONS TEAM  ★', W / 2, 168);
+
+  ctx.fillStyle = '#555';
+  ctx.font = '5.5px "Press Start 2P", monospace';
+  ctx.fillText('4 LEVELS  |  70% LEARNING  |  30% GAMEPLAY  |  HUMAN IN THE LOOP', W / 2, 198);
+
+  drawZally(W / 2, 400, 0.85, t);
+
+  if (Math.floor(t / 550) % 2 === 0) {
+    ctx.fillStyle = '#ccff00';
+    ctx.font = '10px "Press Start 2P", monospace';
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = '#ccff00';
+    ctx.fillText('[ PRESS ENTER OR CLICK ]', W / 2, 540);
+    ctx.shadowBlur = 0;
+  }
+
+  ctx.fillStyle = '#333';
+  ctx.font = '5px "Press Start 2P", monospace';
+  ctx.fillText('KEYS: ← ↓ → to hit notes  |  MOBILE: tap the lane buttons', W / 2, 578);
+}
+
+function renderLevelComplete(t) {
+  drawBackground();
+  drawZally(W / 2, H / 2 + 150, 1.0, t);
+  ctx.fillStyle = '#ccff00';
+  ctx.font = '22px "Press Start 2P", monospace';
+  ctx.textAlign = 'center';
+  ctx.shadowBlur = 22;
+  ctx.shadowColor = '#ccff00';
+  ctx.fillText('LEVEL COMPLETE!', W / 2, H / 2 - 30);
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#ff6600';
+  ctx.font = '9px "Press Start 2P", monospace';
+  ctx.fillText('SCORE +' + game.score, W / 2, H / 2 + 18);
+}
+
+function renderTransmitting(t) {
+  drawBackground();
+  drawZally(W / 2, 480, 1.0, t);
+  const elapsed = t - game.transmitStart;
+  const prog = Math.min(1, elapsed / 2500);
+
+  ctx.fillStyle = 'rgba(0,0,0,0.65)';
+  ctx.beginPath();
+  ctx.roundRect(180, 160, 440, 190, 6);
+  ctx.fill();
+  ctx.strokeStyle = '#ff6600';
+  ctx.lineWidth = 2;
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = '#ff6600';
+  ctx.beginPath();
+  ctx.roundRect(180, 160, 440, 190, 6);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = '#ff6600';
+  ctx.font = '8.5px "Press Start 2P", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('📡 TRANSMITTING', W / 2, 208);
+  ctx.fillText('SOUND MASTERING REPORT...', W / 2, 238);
+
+  ctx.fillStyle = '#111';
+  ctx.fillRect(210, 266, 380, 18);
+  ctx.fillStyle = prog > 0.5 ? '#ccff00' : '#ff6600';
+  ctx.shadowBlur = Math.floor(t / 80) % 2 === 0 ? 8 : 0;
+  ctx.shadowColor = ctx.fillStyle;
+  ctx.fillRect(210, 266, 380 * prog, 18);
+  ctx.shadowBlur = 0;
+
+  const dots = '.'.repeat(Math.floor(elapsed / 350) % 4);
+  ctx.fillStyle = '#888';
+  ctx.font = '6.5px "Press Start 2P", monospace';
+  ctx.fillText(Math.floor(prog * 100) + '%  PROCESSING' + dots, W / 2, 316);
+
+  if (prog >= 1) {
+    setTimeout(() => {
+      if (game.screen === 'TRANSMITTING') {
+        game.screen = 'VICTORY';
+        victoryOverlay.classList.add('active');
+        playVictory();
+      }
+    }, 100);
+  }
+}
+
+function renderVictory(t) {
+  drawBackground();
+  const grd = ctx.createRadialGradient(W / 2, H / 2 - 40, 0, W / 2, H / 2 - 40, 340);
+  grd.addColorStop(0, 'rgba(204,255,0,0.12)');
+  grd.addColorStop(0.5, 'rgba(255,102,0,0.06)');
+  grd.addColorStop(1, 'transparent');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, W, H);
+
+  for (let i = 0; i < 10; i++) {
+    const ang = (i / 10) * Math.PI * 2 + t * 0.00065;
+    const r = 210 + Math.sin(t * 0.002 + i) * 18;
+    const sx = W / 2 + Math.cos(ang) * r;
+    const sy = H / 2 - 50 + Math.sin(ang) * r * 0.45;
+    ctx.fillStyle = i % 2 === 0 ? '#ff6600' : '#ccff00';
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    ctx.arc(sx, sy, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  ctx.font = '52px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('🏆', W / 2, 120);
+
+  ctx.fillStyle = '#ccff00';
+  ctx.font = '17px "Press Start 2P", monospace';
+  ctx.shadowBlur = 22;
+  ctx.shadowColor = '#ccff00';
+  ctx.fillText('YF&K AI ROCKSTAR', W / 2, 172);
+  ctx.fillText('MASTER!', W / 2, 204);
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = '#ff6600';
+  ctx.font = '10px "Press Start 2P", monospace';
+  ctx.fillText('FINAL SCORE: ' + game.totalScore, W / 2, 246);
+
+  ctx.fillStyle = '#fff';
+  ctx.font = '6.5px "Press Start 2P", monospace';
+  ctx.fillText('ALL 4 LYRIA 3.5 PROMPTS UNLOCKED!', W / 2, 278);
+
+  ctx.fillStyle = '#666';
+  ctx.font = '5.5px "Press Start 2P", monospace';
+  ctx.fillText('CHALLENGE COMPLETED: "CREATE AN ANTHEM FOR THE TEAM"', W / 2, 305);
+
+  if (zallyJumpLoaded) {
+    const aspect = zallyJumpImg.naturalWidth / zallyJumpImg.naturalHeight;
+    const h = 260, w = h * aspect;
+    const bounce = Math.abs(Math.sin(t * 0.004)) * 38;
+    const sway = Math.sin(t * 0.0022) * 10;
+    ctx.shadowBlur = 20 + Math.sin(t * 0.005) * 12;
+    ctx.shadowColor = 'rgba(204,255,0,0.7)';
+    ctx.drawImage(zallyJumpImg, W / 2 - w / 2 + sway, 320 - bounce, w, h);
+    ctx.shadowBlur = 0;
+  }
+}
+
+function renderGameplay(ts) {
+  drawBackground();
+  drawLanes();
+  drawTrigger(game.keys);
+
+  const el = game.gameElapsed;
+  game.notes.forEach(n => {
+    if (n.hit || n.missed) return;
+    const spawnMs = n.hitTime - TRAVEL_MS;
+    if (el >= spawnMs) {
+      n.spawned = true;
+      const prog = (el - spawnMs) / TRAVEL_MS;
+      n.x = LANES[n.lane].x;
+      n.y = -NOTE_R * 2 + prog * (TRIGGER_Y + NOTE_R * 2 + 30);
+      if (!n.missed && el > n.hitTime + HIT_WINDOW + 100) {
+        n.missed = true;
+        playMiss();
+        game.volumeMix = Math.max(0, game.volumeMix - 0.5);
+        game.starPower = Math.max(0, game.starPower - 4);
+        game.flashFx = { col: 'rgba(255,0,50,0.25)', a: 0.25 };
+        updateHUD();
+        if (game.volumeMix <= 0 && !game.levelDone) {
+          game.levelDone = true;
+          setTimeout(restartLevel, 600);
+        }
+      }
+    }
+  });
+  drawNotes();
+  drawFX();
+  drawZally(88, 490, 0.72, ts);
+
+  const timeLeft = Math.max(0, GAME_DUR - el);
+  const tfrac = timeLeft / GAME_DUR;
+  ctx.fillStyle = '#111';
+  ctx.fillRect(0, 0, W, 7);
+  ctx.fillStyle = tfrac > 0.4 ? '#ccff00' : tfrac > 0.2 ? '#ff6600' : '#ff0033';
+  ctx.shadowBlur = tfrac < 0.2 ? 8 : 0;
+  ctx.shadowColor = '#ff0033';
+  ctx.fillRect(0, 0, W * tfrac, 7);
+  ctx.shadowBlur = 0;
+
+  const lastNoteTime = game.notes.length ? Math.max(...game.notes.map(n => n.hitTime)) : 0;
+  if (!game.levelDone && (el >= lastNoteTime + 800 || el >= GAME_DUR)) {
+    game.levelDone = true;
+    setTimeout(levelComplete, 600);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  GAMEPLAY LOGIC
+// ═══════════════════════════════════════════════
+function prepareNotes(lvData) {
+  game.notes = lvData.notePattern.map(n => ({
+    lane: n.l,
+    hitTime: n.t,
+    freq: n.f || LANE_FREQS[n.l],
+    x: LANES[n.l].x,
+    y: -NOTE_R * 2,
+    spawned: false,
+    hit: false,
+    missed: false,
+    hitAnim: 0,
+  }));
+}
+
+function handleHit(laneIdx) {
+  if (game.screen !== 'PLAYING') return;
+  const el = game.gameElapsed;
+  let best = null, bestDiff = Infinity;
+  game.notes.forEach(n => {
+    if (!n.spawned || n.hit || n.missed || n.lane !== laneIdx) return;
+    const diff = Math.abs(el - n.hitTime);
+    if (diff <= HIT_WINDOW && diff < bestDiff) { bestDiff = diff; best = n; }
+  });
+  if (!best) return;
+
+  best.hit = true;
+  best.hitAnim = 0;
+  const perfect = bestDiff < 50;
+  playHit(best.freq, perfect);
+  const pts = perfect ? 150 : 100;
+  game.score += pts;
+  game.totalScore += pts;
+  game.starPower = Math.min(game.maxStar, game.starPower + 12);
+  game.volumeMix = Math.min(game.maxVol, game.volumeMix + 0.25);
+
+  const lane = LANES[laneIdx];
+  game.comboText = { txt: perfect ? 'PERFECT!' : 'GOOD!', x: lane.x, y: TRIGGER_Y - 44, col: perfect ? '#ccff00' : '#ff6600', f: 0 };
+  game.flashFx = { col: lane.color + '18', a: 0.12 };
+  updateHUD();
+}
+
+function updateHUD() {
+  hudScore.textContent = 'SCORE: ' + game.score;
+  hudLevel.textContent = 'LEVEL ' + (game.levelIndex + 1);
+  barVolume.style.width = (game.volumeMix / game.maxVol * 100) + '%';
+  barStar.style.width = (game.starPower / game.maxStar * 100) + '%';
+}
+
+// ═══════════════════════════════════════════════
+//  MODAL SYSTEM
+// ═══════════════════════════════════════════════
+function showQuestion(lvIdx) {
+  const lv = LEVELS_DATA[lvIdx];
+  game.screen = 'QUESTION';
+  hudEl.classList.remove('active');
+  touchControls.classList.remove('active');
+
+  const opts = lv.options.map((o, i) =>
+    `<button class="option-btn" onclick="handleAnswer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`
+  ).join('');
+
+  modalContent.innerHTML = `
+    <div class="modal-badge">${lv.badge}</div>
+    <div class="modal-title">LEVEL ${lv.number}: ${lv.title} — ${lv.subtitle}</div>
+    <div class="modal-question">❓ ${lv.question}</div>
+    ${opts}
+    <div style="font-size:5.5px;color:#444;margin-top:12px;text-align:center;line-height:2;">
+      ⚡ Answer correctly to tune the instrument and unlock the Perfect Prompt
+    </div>
+  `;
+  overlay.classList.add('active');
+}
+
+function handleAnswer(idx) {
+  const lv = LEVELS_DATA[game.levelIndex];
+  const btns = modalContent.querySelectorAll('.option-btn');
+  btns.forEach(b => { b.disabled = true; });
+
+  if (idx === lv.correctIndex) {
+    btns[idx].classList.add('correct');
+    setTimeout(() => showUnlocked(lv), 300);
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[lv.correctIndex].classList.add('correct');
+
+    const hintEl = document.createElement('div');
+    hintEl.className = 'hint-box';
+    hintEl.style.whiteSpace = 'pre-line';
+    hintEl.textContent = lv.hint;
+    modalContent.appendChild(hintEl);
+
+    const retry = document.createElement('button');
+    retry.className = 'play-btn';
+    retry.style.cssText = 'background:linear-gradient(135deg,#330000,#1a0000);color:#ff4444;margin-top:14px;';
+    retry.textContent = '↩ TRY AGAIN';
+    retry.onclick = () => showQuestion(game.levelIndex);
+    modalContent.appendChild(retry);
+  }
+}
+
+function showUnlocked(lv) {
+  const promptLines = lv.unlockedPrompt.replace(/\\n/g, '\n');
+  modalContent.innerHTML = `
+    <div class="modal-badge">✅ CORRECT ANSWER!</div>
+    <div class="modal-title" style="color:#ccff00;">INSTRUMENT TUNED! 🎸</div>
+    <div class="hint-box" style="white-space:pre-line;">${lv.hint}</div>
+    <div class="unlock-box">
+      <span class="unlock-label">🔓 ${lv.promptLabel}</span>
+      <span class="prompt-text" style="white-space:pre-line;">${promptLines}</span>
+    </div>
+    <div style="font-size:5.5px;color:#666;margin-top:12px;line-height:2;text-align:center;">
+      This prompt follows Lyria 3.5 official Best Practices — Human in the Loop active!
+    </div>
+    <button class="play-btn" onclick="startGameplay()">🎵 PLAY THE TRACK</button>
+  `;
+}
+
+// ═══════════════════════════════════════════════
+//  TRANSITIONS
+// ═══════════════════════════════════════════════
+function startGameplay() {
+  overlay.classList.remove('active');
+  hudEl.classList.add('active');
+  touchControls.classList.add('active');
+  game.screen = 'PLAYING';
+  game.score = 0;
+  game.volumeMix = 10;
+  game.starPower = 0;
+  game.levelDone = false;
+  game.flashFx = null;
+  game.comboText = null;
+  game.gameStart = performance.now();
+  prepareNotes(LEVELS_DATA[game.levelIndex]);
+  updateHUD();
+  startBeat();
+}
+
+function restartLevel() {
+  stopBeat();
+  game.flashFx = null;
+  game.comboText = null;
+  game.screen = 'QUESTION';
+  hudEl.classList.remove('active');
+  touchControls.classList.remove('active');
+  showQuestion(game.levelIndex);
+}
+
+function levelComplete() {
+  stopBeat();
+  playLevelComplete();
+  game.screen = 'LEVEL_COMPLETE';
+  hudEl.classList.remove('active');
+  touchControls.classList.remove('active');
+  if (game.levelIndex < LEVELS_DATA.length - 1) {
+    game.levelIndex++;
+    setTimeout(() => showQuestion(game.levelIndex), 2200);
+  } else {
+    setTimeout(() => {
+      game.screen = 'TRANSMITTING';
+      game.transmitStart = performance.now();
+    }, 2200);
+  }
+}
+
+function resetGame() {
+  stopBeat();
+  game.screen = 'MENU';
+  game.levelIndex = 0;
+  game.score = 0;
+  game.totalScore = 0;
+  game.starPower = 0;
+  game.volumeMix = 10;
+  game.notes = [];
+  game.levelDone = false;
+  game.flashFx = null;
+  game.comboText = null;
+  overlay.classList.remove('active');
+  hudEl.classList.remove('active');
+  touchControls.classList.remove('active');
+  victoryOverlay.classList.remove('active');
+  updateHUD();
+}
+
+// ═══════════════════════════════════════════════
+//  MAIN LOOP
+// ═══════════════════════════════════════════════
+function loop(ts) {
+  ctx.clearRect(0, 0, W, H);
+  if (game.screen === 'PLAYING') game.gameElapsed = ts - game.gameStart;
+  switch (game.screen) {
+    case 'MENU':           renderMenu(ts);          break;
+    case 'QUESTION':
+    case 'ANSWER':
+      drawBackground();
+      drawZally(700, 460, 0.72, ts);
+      break;
+    case 'PLAYING':        renderGameplay(ts);      break;
+    case 'LEVEL_COMPLETE': renderLevelComplete(ts); break;
+    case 'TRANSMITTING':   renderTransmitting(ts);  break;
+    case 'VICTORY':        renderVictory(ts);       break;
+  }
+  requestAnimationFrame(loop);
+}
+
+// ═══════════════════════════════════════════════
+//  INPUT
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (game.keys[e.key]) return;
+  game.keys[e.key] = true;
+  if (game.screen === 'MENU' && (e.key === 'Enter' || e.key === ' ')) {
+    showQuestion(0);
+    return;
+  }
+  if (game.screen === 'PLAYING') {
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); handleHit(0); }
+    if (e.key === 'ArrowDown')  { e.preventDefault(); handleHit(1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); handleHit(2); }
+  }
+});
+
+document.addEventListener('keyup', e => { game.keys[e.key] = false; });
+
+canvas.addEventListener('click', () => {
+  if (game.screen === 'MENU') showQuestion(0);
+});
+
+function touchHit(laneIdx) {
+  handleHit(laneIdx);
+  const keyMap = ['ArrowLeft', 'ArrowDown', 'ArrowRight'];
+  game.keys[keyMap[laneIdx]] = true;
+  setTimeout(() => { game.keys[keyMap[laneIdx]] = false; }, 120);
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+initParticles();
+updateHUD();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
