@@ -494,44 +494,66 @@ const LEVELS_DATA = [
     hint: "💡 La struttura corretta prevede:\n• Prefisso \"Lyrics:\" per separare il testo\n• Tag di sezione: [Verse 1], [Chorus], [Bridge]\n• Parentesi tonde per cori/echi: (YF&K!)\n• Istruzioni musicali PRIMA del testo\n• Il modello legge le due parti separatamente!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 3:",
     unlockedPrompt: "Brano synth-rock energetico, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
-    // ♪ "Basket Case" inspired (Green Day) — trasportato in F minor
-    // Riff principale: F3-Ab3-Bb3-C4 (salita) poi C4-Bb3-Ab3-F3 (discesa)
-    // F3=175, Ab3=208, Bb3=233, C4=262
+    // ♪ "Sweet Child O' Mine" (Guns N' Roses) — arpeggio iconico
+    // Sezione D: D4-D4-A4-D4-F#4-D4-A4
+    // Sezione G: G3-G3-D4-G3-B3-G3-D4
+    // Sezione A: A3-A3-E4-A3-C#4-A3-E4
+    // D4=294, A4=440, F#4=370, G3=196, B3=247, A3=220, E4=330, C#4=277
     notePattern: [
-      // — Salita: F-Ab-Bb-C —
-      {l:0,t:1500,f:175},  // F3
-      {l:1,t:2100,f:208},  // Ab3
-      {l:1,t:2700,f:233},  // Bb3
-      {l:2,t:3300,f:262},  // C4  ← cima
-      // — Discesa: Bb-Ab-F —
-      {l:1,t:4000,f:233},  // Bb3
-      {l:1,t:4600,f:208},  // Ab3
-      {l:0,t:5200,f:175},  // F3
-      // — Ripetizione 1 —
-      {l:0,t:6200,f:175},
-      {l:1,t:6800,f:208},
-      {l:1,t:7400,f:233},
-      {l:2,t:8000,f:262},
-      {l:1,t:8700,f:233},
-      {l:1,t:9300,f:208},
-      {l:0,t:9900,f:175},
-      // — Ripetizione 2 —
-      {l:0,t:10900,f:175},
-      {l:1,t:11500,f:208},
-      {l:1,t:12100,f:233},
-      {l:2,t:12700,f:262},
-      {l:1,t:13400,f:233},
-      {l:1,t:14000,f:208},
-      {l:0,t:14600,f:175},
-      // — Finale: salita completa fino a D4 —
-      {l:0,t:15600,f:175},
-      {l:1,t:16200,f:208},
-      {l:1,t:16800,f:233},
-      {l:2,t:17400,f:262},
-      {l:2,t:18000,f:294},  // D4 — nota in più per il finale
-      {l:2,t:18600,f:262},
-      {l:1,t:19200,f:233},
-      {l:0,t:19800,f:175},
+      // — Sezione D (×2) —
+      {l:0,t:1500,f:294}, // D4
+      {l:0,t:1850,f:294}, // D4
+      {l:1,t:2200,f:440}, // A4
+      {l:0,t:2550,f:294}, // D4
+      {l:2,t:2900,f:370}, // F#4
+      {l:0,t:3250,f:294}, // D4
+      {l:1,t:3600,f:440}, // A4
+      {l:0,t:3950,f:294}, // D4
+      {l:0,t:4300,f:294}, // D4
+      {l:1,t:4650,f:440}, // A4
+      {l:0,t:5000,f:294}, // D4
+      {l:2,t:5350,f:370}, // F#4
+      {l:0,t:5700,f:294}, // D4
+      {l:1,t:6050,f:440}, // A4
+      // — Sezione G —
+      {l:0,t:6600,f:196}, // G3
+      {l:0,t:6950,f:196}, // G3
+      {l:1,t:7300,f:294}, // D4
+      {l:0,t:7650,f:196}, // G3
+      {l:2,t:8000,f:247}, // B3
+      {l:0,t:8350,f:196}, // G3
+      {l:1,t:8700,f:294}, // D4
+      // — Sezione A —
+      {l:1,t:9300,f:220}, // A3
+      {l:1,t:9650,f:220}, // A3
+      {l:2,t:10000,f:330}, // E4
+      {l:1,t:10350,f:220}, // A3
+      {l:2,t:10700,f:277}, // C#4
+      {l:1,t:11050,f:220}, // A3
+      {l:2,t:11400,f:330}, // E4
+      // — Sezione D finale (×2) —
+      {l:0,t:12000,f:294},
+      {l:0,t:12350,f:294},
+      {l:1,t:12700,f:440},
+      {l:0,t:13050,f:294},
+      {l:2,t:13400,f:370},
+      {l:0,t:13750,f:294},
+      {l:1,t:14100,f:440},
+      {l:0,t:14450,f:294},
+      {l:0,t:14800,f:294},
+      {l:1,t:15150,f:440},
+      {l:0,t:15500,f:294},
+      {l:2,t:15850,f:370},
+      {l:0,t:16200,f:294},
+      {l:1,t:16550,f:440},
+      // — Sezione G finale —
+      {l:0,t:17100,f:196},
+      {l:0,t:17450,f:196},
+      {l:1,t:17800,f:294},
+      {l:0,t:18150,f:196},
+      {l:2,t:18500,f:247},
+      {l:0,t:18850,f:196},
+      {l:1,t:19200,f:294},
     ]
   },
   {
@@ -551,45 +573,57 @@ const LEVELS_DATA = [
     hint: "💡 Il workflow ottimale per i profili vocali:\n• Definisci: estensione, timbro, stile (es. roca, granulosa)\n• Usa lyria-3-clip-preview per test rapidi a 30 secondi\n• Itera sul prompt vocale prima di spendere risorse\n• Solo dopo: passa a lyria-3 per la versione completa!\n• Human in the Loop: tu guidi, l'AI esegue!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 4 (BOSS):",
     unlockedPrompt: "Vocal persona: Weathered Rocker (uomo), voce roca e ruvida, timbro granuloso, vibrato controllato.\nModel: lyria-3-clip-preview\n→ Test rapido 30 sec → Affina prompt vocale\n→ Versione finale: lyria-3 completo",
-    // ♪ "Thunderstruck" inspired (AC/DC) — trasportato, pattern iconico
-    // Il riff: A3 ripetuta con salti su B3 e G3 — gallop elettrico
-    // A3=220 (lane1), B3=247 (lane2), G3=196 (lane0), E3=165 (lane0)
+    // ♪ "Back in Black" (AC/DC) — riff iconico
+    // Pattern: A-A-D-A-A-G-A-E ripetuto
+    // A3=220 (lane2=high), D3=147 (lane0=low), G3=196 (lane1=mid), E3=165 (lane0)
     notePattern: [
-      // — Round 1: A-A-A-B-A-G-A-B-A-G —
-      {l:1,t:1000,f:220},  // A3
-      {l:1,t:1600,f:220},  // A3
-      {l:1,t:2200,f:220},  // A3
-      {l:2,t:2800,f:247},  // B3 ← salto su
-      {l:1,t:3400,f:220},  // A3
-      {l:0,t:4000,f:196},  // G3 ← salto giù
-      {l:1,t:4600,f:220},  // A3
-      {l:2,t:5200,f:247},  // B3
-      {l:1,t:5800,f:220},  // A3
-      {l:0,t:6400,f:196},  // G3
-      // — Round 2: stessa sequenza —
-      {l:1,t:7200,f:220},
-      {l:1,t:7800,f:220},
-      {l:1,t:8400,f:220},
-      {l:2,t:9000,f:247},  // B3
-      {l:1,t:9600,f:220},
-      {l:0,t:10200,f:196}, // G3
-      {l:1,t:10800,f:220},
-      {l:2,t:11400,f:247}, // B3
-      {l:1,t:12000,f:220},
-      {l:0,t:12600,f:196}, // G3
-      // — Round 3: variazione con discesa verso E3 —
-      {l:1,t:13400,f:220},
-      {l:1,t:14000,f:220},
-      {l:2,t:14600,f:247}, // B3
-      {l:1,t:15200,f:220},
-      {l:0,t:15800,f:196}, // G3
-      {l:0,t:16400,f:165}, // E3 ← discesa finale
-      {l:1,t:17000,f:220},
-      {l:2,t:17600,f:247}, // B3
-      {l:1,t:18200,f:220},
-      {l:0,t:18800,f:196}, // G3
-      {l:0,t:19400,f:165}, // E3
-      {l:1,t:20000,f:220}, // A3 — chiusura
+      // — Round 1 —
+      {l:2,t:1000,f:220}, // A3
+      {l:2,t:1400,f:220}, // A3
+      {l:0,t:1800,f:147}, // D3
+      {l:2,t:2200,f:220}, // A3
+      {l:2,t:2600,f:220}, // A3
+      {l:1,t:3000,f:196}, // G3
+      {l:2,t:3400,f:220}, // A3
+      {l:0,t:3800,f:165}, // E3
+      // — Round 2 —
+      {l:2,t:4600,f:220},
+      {l:2,t:5000,f:220},
+      {l:0,t:5400,f:147},
+      {l:2,t:5800,f:220},
+      {l:2,t:6200,f:220},
+      {l:1,t:6600,f:196},
+      {l:2,t:7000,f:220},
+      {l:0,t:7400,f:165},
+      // — Round 3 —
+      {l:2,t:8200,f:220},
+      {l:2,t:8600,f:220},
+      {l:0,t:9000,f:147},
+      {l:2,t:9400,f:220},
+      {l:2,t:9800,f:220},
+      {l:1,t:10200,f:196},
+      {l:2,t:10600,f:220},
+      {l:0,t:11000,f:165},
+      // — Round 4 (variazione con doppio D) —
+      {l:2,t:11800,f:220},
+      {l:2,t:12200,f:220},
+      {l:0,t:12600,f:147},
+      {l:0,t:13000,f:147}, // doppio D
+      {l:2,t:13400,f:220},
+      {l:2,t:13800,f:220},
+      {l:1,t:14200,f:196},
+      {l:2,t:14600,f:220},
+      {l:0,t:15000,f:165},
+      {l:2,t:15400,f:220},
+      // — Round 5 (finale) —
+      {l:2,t:16000,f:220},
+      {l:2,t:16400,f:220},
+      {l:0,t:16800,f:147},
+      {l:2,t:17200,f:220},
+      {l:2,t:17600,f:220},
+      {l:1,t:18000,f:196},
+      {l:2,t:18400,f:220},
+      {l:0,t:18800,f:165},
     ]
   }
 ];
