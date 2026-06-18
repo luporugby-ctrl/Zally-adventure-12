@@ -502,58 +502,56 @@ function makeDistortionCurve(amount) {
   return curve;
 }
 
-function playGuitar(freq, sustain = 0.28, vol = 0.55) {
+function playGuitar(freq, sustain = 0.32, vol = 0.52) {
   try {
     const ac = getAC();
     const t = ac.currentTime;
-    const freqs = [freq, freq * 2, freq * 1.498];
-    const vols  = [1.0,  0.35,    0.55];
 
     const masterGain = ac.createGain();
     masterGain.gain.setValueAtTime(0.001, t);
-    masterGain.gain.linearRampToValueAtTime(vol, t + 0.008);
-    masterGain.gain.setValueAtTime(vol, t + 0.02);
+    masterGain.gain.linearRampToValueAtTime(vol, t + 0.010);
+    masterGain.gain.setValueAtTime(vol, t + 0.025);
     masterGain.gain.exponentialRampToValueAtTime(0.001, t + sustain);
 
     const waver = ac.createWaveShaper();
-    waver.curve = makeDistortionCurve(300);
-    waver.oversample = '4x';
+    waver.curve = makeDistortionCurve(28);
+    waver.oversample = '2x';
 
     const eq = ac.createBiquadFilter();
     eq.type = 'peaking';
-    eq.frequency.value = 1800;
-    eq.gain.value = 8;
-    eq.Q.value = 1.2;
+    eq.frequency.value = 2800;
+    eq.gain.value = 5;
+    eq.Q.value = 1.0;
 
     const hicut = ac.createBiquadFilter();
     hicut.type = 'lowpass';
-    hicut.frequency.value = 5500;
+    hicut.frequency.value = 8000;
 
     waver.connect(eq);
     eq.connect(hicut);
     hicut.connect(masterGain);
     masterGain.connect(ac.destination);
 
-    freqs.forEach((f, i) => {
+    [[freq, 'sawtooth', 1.0, -3], [freq * 2, 'triangle', 0.10, 0]].forEach(([f, type, gain, detune]) => {
       const osc = ac.createOscillator();
       const og  = ac.createGain();
-      osc.type = 'sawtooth';
+      osc.type = type;
       osc.frequency.value = f;
-      osc.detune.value = (i === 0 ? -4 : i === 1 ? 6 : 0);
-      og.gain.value = vols[i];
+      osc.detune.value = detune;
+      og.gain.value = gain;
       osc.connect(og);
       og.connect(waver);
       osc.start(t);
-      osc.stop(t + sustain + 0.06);
+      osc.stop(t + sustain + 0.05);
     });
 
-    const nBuf = ac.createBuffer(1, ac.sampleRate * 0.018, ac.sampleRate);
+    const nBuf = ac.createBuffer(1, ac.sampleRate * 0.014, ac.sampleRate);
     const nd = nBuf.getChannelData(0);
-    for (let j = 0; j < nd.length; j++) nd[j] = (Math.random() * 2 - 1) * Math.exp(-j / (ac.sampleRate * 0.004));
+    for (let j = 0; j < nd.length; j++) nd[j] = (Math.random() * 2 - 1) * Math.exp(-j / (ac.sampleRate * 0.003));
     const nSrc = ac.createBufferSource();
     nSrc.buffer = nBuf;
     const nGain = ac.createGain();
-    nGain.gain.value = 0.15;
+    nGain.gain.value = 0.08;
     nSrc.connect(nGain);
     nGain.connect(ac.destination);
     nSrc.start(t);
