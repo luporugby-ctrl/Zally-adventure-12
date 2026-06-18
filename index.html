@@ -382,22 +382,29 @@ const LEVELS_DATA = [
     hint: "💡 I prompt vaghi producono risultati generici. Menziona SEMPRE:\n• Genere musicale\n• BPM (es. 120 BPM)\n• Era storica (es. anni '80)\n• Strumenti esatti\n• Come questi elementi interagiscono tra loro.",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 1:",
     unlockedPrompt: "\"Un brano synth-pop in stile anni '80 con un ritmo incalzante a 120 BPM, sintetizzatori brillanti, atmosfera retro-futuristica e un assolo di sassofono nel bridge.\"",
+    // ♪ "Smoke on the Water" inspired — trasportato in F# minor (modificato)
+    // Riff: F#3-A3-B3 / F#3-A3-C4-B3 / F#3-A3-B3-A3-F#3
     notePattern: [
-      {l:1,t:1500},
-      {l:0,t:2500},
-      {l:2,t:3500},
-      {l:1,t:4500},
-      {l:0,t:5500},
-      {l:2,t:6500},
-      {l:1,t:7500},
-      {l:0,t:8500},
-      {l:2,t:9500},
-      {l:1,t:10500},
-      {l:0,t:11500},
-      {l:2,t:12500},
-      {l:1,t:13500},
-      {l:0,t:14500},
-      {l:2,t:15500},
+      {l:0,t:1500,f:185},  // F#3
+      {l:1,t:2000,f:220},  // A3
+      {l:2,t:2500,f:247},  // B3
+      {l:0,t:3300,f:185},  // F#3
+      {l:1,t:3800,f:220},  // A3
+      {l:2,t:4200,f:277},  // C#4 (modifica rispetto originale)
+      {l:2,t:4700,f:247},  // B3
+      {l:0,t:5500,f:185},  // F#3
+      {l:1,t:6000,f:220},  // A3
+      {l:2,t:6500,f:247},  // B3
+      {l:1,t:7000,f:220},  // A3
+      {l:0,t:7500,f:185},  // F#3
+      {l:0,t:8300,f:185},  // F#3 (seconda strofa)
+      {l:1,t:8800,f:220},  // A3
+      {l:2,t:9300,f:247},  // B3
+      {l:0,t:10100,f:185}, // F#3
+      {l:1,t:10600,f:220}, // A3
+      {l:2,t:11000,f:277}, // C#4
+      {l:2,t:11500,f:247}, // B3
+      {l:0,t:12300,f:185}, // F#3
     ]
   },
   {
@@ -417,22 +424,28 @@ const LEVELS_DATA = [
     hint: "💡 Lyria 3.5 comprende la timeline in secondi!\nUsa:\n• Tag di struttura: [Intro], [Verse 1], [Pre-Chorus], [Chorus]\n• Frecce di progressione: [A] -> [B] -> [C]\n• Timing espliciti: \"Drop a 32 secondi\"\n• Descrittori di energia: \"crescendo esplosivo\"",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 2:",
     unlockedPrompt: "[Intro] -> Atmosfera tesa, 8 secondi -> [Verse 1] -> Energia crescente -> [Pre-Chorus] -> Drop a 32 secondi -> [Chorus] -> Esplosione ritmica con synth lead.",
+    // ♪ "Seven Nation Army" inspired — trasportato in D (modificato)
+    // Riff originale E-E-G-E-D-C-B → qui: D3-D3-F3-D3-C3-Bb2-A2
     notePattern: [
-      {l:0,t:1500},
-      {l:2,t:2500},
-      {l:1,t:3500},
-      {l:0,t:4000},{l:2,t:4500},
-      {l:1,t:5500},
-      {l:0,t:6500},
-      {l:2,t:7500},
-      {l:1,t:8000},{l:0,t:8500},
-      {l:2,t:9500},
-      {l:1,t:10500},
-      {l:0,t:11500},
-      {l:2,t:12000},{l:1,t:12500},
-      {l:0,t:13500},
-      {l:2,t:14500},
-      {l:1,t:15500},
+      {l:1,t:1500,f:147},  // D3
+      {l:0,t:2000,f:147},  // D3
+      {l:2,t:2300,f:175},  // F3 (nota rapida)
+      {l:1,t:2800,f:147},  // D3
+      {l:0,t:3300,f:131},  // C3
+      {l:1,t:3800,f:117},  // Bb2
+      {l:2,t:4700,f:110},  // A2 (nota tenuta)
+      {l:1,t:5700,f:147},  // D3 — ripetizione riff
+      {l:0,t:6200,f:147},  // D3
+      {l:2,t:6500,f:175},  // F3
+      {l:1,t:7000,f:147},  // D3
+      {l:0,t:7500,f:131},  // C3
+      {l:1,t:8000,f:117},  // Bb2
+      {l:2,t:8900,f:110},  // A2
+      {l:0,t:9900,f:147},  // D3 — variazione finale
+      {l:1,t:10400,f:175}, // F3
+      {l:2,t:10900,f:196}, // G3
+      {l:1,t:11400,f:175}, // F3
+      {l:0,t:11900,f:147}, // D3
     ]
   },
   {
@@ -452,22 +465,32 @@ const LEVELS_DATA = [
     hint: "💡 La struttura corretta prevede:\n• Prefisso \"Lyrics:\" per separare il testo\n• Tag di sezione: [Verse 1], [Chorus], [Bridge]\n• Parentesi tonde per cori/echi: (YF&K!)\n• Istruzioni musicali PRIMA del testo\n• Il modello legge le due parti separatamente!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 3:",
     unlockedPrompt: "Brano synth-rock energetico, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
+    // ♪ "Eye of the Tiger" inspired — trasportato in E minor (modificato)
+    // Ritmo: da-da-da DUM | da-da DUM | da-da-da DUM
+    // E3-E3-G3-A3 | E3-G3-A3 | E3-G3-A3-B3
     notePattern: [
-      {l:1,t:1500},
-      {l:0,t:2500},
-      {l:2,t:3500},
-      {l:1,t:4000},{l:0,t:4500},
-      {l:2,t:5500},
-      {l:1,t:6500},
-      {l:0,t:7000},{l:2,t:7500},
-      {l:1,t:8500},
-      {l:0,t:9500},
-      {l:2,t:10000},{l:1,t:10500},
-      {l:0,t:11500},
-      {l:2,t:12500},
-      {l:1,t:13000},{l:0,t:13500},
-      {l:2,t:14500},
-      {l:1,t:15500},
+      {l:1,t:1200,f:165},  // E3
+      {l:0,t:1500,f:165},  // E3
+      {l:1,t:1750,f:196},  // G3
+      {l:2,t:2250,f:220},  // A3
+      {l:0,t:3000,f:165},  // E3
+      {l:1,t:3300,f:196},  // G3
+      {l:2,t:3800,f:220},  // A3
+      {l:0,t:4600,f:165},  // E3
+      {l:1,t:4900,f:196},  // G3
+      {l:2,t:5400,f:220},  // A3
+      {l:2,t:5900,f:247},  // B3
+      {l:1,t:6700,f:165},  // E3 — seconda strofa
+      {l:0,t:7000,f:165},  // E3
+      {l:1,t:7250,f:196},  // G3
+      {l:2,t:7750,f:220},  // A3
+      {l:0,t:8500,f:165},  // E3
+      {l:1,t:8800,f:196},  // G3
+      {l:2,t:9300,f:220},  // A3
+      {l:0,t:10100,f:165}, // E3
+      {l:1,t:10400,f:196}, // G3
+      {l:2,t:10900,f:220}, // A3
+      {l:2,t:11400,f:247}, // B3
     ]
   },
   {
@@ -487,21 +510,35 @@ const LEVELS_DATA = [
     hint: "💡 Il workflow ottimale per i profili vocali:\n• Definisci: estensione, timbro, stile (es. roca, granulosa)\n• Usa lyria-3-clip-preview per test rapidi a 30 secondi\n• Itera sul prompt vocale prima di spendere risorse\n• Solo dopo: passa a lyria-3 per la versione completa!\n• Human in the Loop: tu guidi, l'AI esegue!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 4 (BOSS):",
     unlockedPrompt: "Vocal persona: Weathered Rocker (uomo), voce roca e ruvida, timbro granuloso, vibrato controllato.\nModel: lyria-3-clip-preview\n→ Test rapido 30 sec → Affina prompt vocale\n→ Versione finale: lyria-3 completo",
+    // ♪ "Iron Man" / "Enter Sandman" inspired — BOSS riff pesante (trasportato)
+    // Riff: B2-D3-E3-E3 / G3-F#3-E3 / B2-D3-E3-G3-F#3
     notePattern: [
-      {l:0,t:1500},
-      {l:1,t:2500},
-      {l:2,t:3500},
-      {l:0,t:4500},
-      {l:1,t:5500},
-      {l:2,t:6500},
-      {l:0,t:7500},
-      {l:1,t:8500},
-      {l:2,t:9500},
-      {l:0,t:10500},
-      {l:1,t:11500},
-      {l:2,t:12500},
-      {l:0,t:13500},
-      {l:1,t:14500},
+      {l:0,t:1000,f:123},  // B2
+      {l:0,t:1400,f:147},  // D3
+      {l:1,t:1700,f:165},  // E3
+      {l:1,t:2000,f:165},  // E3
+      {l:2,t:2500,f:196},  // G3
+      {l:2,t:2800,f:185},  // F#3
+      {l:1,t:3200,f:165},  // E3
+      {l:0,t:4000,f:123},  // B2 — ripetizione
+      {l:0,t:4400,f:147},  // D3
+      {l:1,t:4700,f:165},  // E3
+      {l:1,t:5000,f:165},  // E3
+      {l:2,t:5500,f:196},  // G3
+      {l:2,t:5800,f:185},  // F#3
+      {l:1,t:6200,f:165},  // E3
+      {l:0,t:7000,f:123},  // B2 — variazione
+      {l:0,t:7400,f:147},  // D3
+      {l:1,t:7700,f:165},  // E3
+      {l:2,t:8200,f:196},  // G3
+      {l:2,t:8600,f:185},  // F#3
+      {l:0,t:9400,f:123},  // B2 — finale martellante
+      {l:0,t:9700,f:147},  // D3
+      {l:1,t:10000,f:165}, // E3
+      {l:1,t:10300,f:165}, // E3
+      {l:2,t:10700,f:196}, // G3
+      {l:2,t:11000,f:220}, // A3 (nota finale modificata, più alta)
+      {l:1,t:11500,f:165}, // E3
     ]
   }
 ];
@@ -618,9 +655,8 @@ function playGuitar(freq, sustain = 0.28, vol = 0.55) {
 // We have 3 lanes → E2=82Hz, A2=110Hz, D3=147Hz (power chords!)
 const LANE_FREQS = [110, 147, 196]; // A2, D3, G3
 
-function playHit(laneIdx, perfect) {
-  const freq = LANE_FREQS[laneIdx !== undefined ? laneIdx : 1];
-  playGuitar(freq, perfect ? 0.38 : 0.26, perfect ? 0.6 : 0.5);
+function playHit(freq, perfect) {
+  playGuitar(freq, perfect ? 0.42 : 0.28, perfect ? 0.6 : 0.5);
   if (perfect) {
     // Extra shimmer on perfect
     try {
@@ -1290,6 +1326,7 @@ function prepareNotes(lvData) {
   game.notes = lvData.notePattern.map(n => ({
     lane: n.l,
     hitTime: n.t,
+    freq: n.f || LANE_FREQS[n.l],
     x: LANES[n.l].x,
     y: -NOTE_R * 2,
     spawned: false,
@@ -1314,7 +1351,7 @@ function handleHit(laneIdx) {
   best.hitAnim = 0;
 
   const perfect = bestDiff < 50;
-  playHit(laneIdx, perfect);
+  playHit(best.freq, perfect);
   const pts = perfect ? 150 : 100;
   game.score += pts;
   game.totalScore += pts;
