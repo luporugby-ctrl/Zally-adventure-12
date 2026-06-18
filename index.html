@@ -494,44 +494,45 @@ const LEVELS_DATA = [
     hint: "💡 La struttura corretta prevede:\n• Prefisso \"Lyrics:\" per separare il testo\n• Tag di sezione: [Verse 1], [Chorus], [Bridge]\n• Parentesi tonde per cori/echi: (YF&K!)\n• Istruzioni musicali PRIMA del testo\n• Il modello legge le due parti separatamente!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 3:",
     unlockedPrompt: "Brano synth-rock energetico, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
-    // ♪ "Eye of the Tiger" inspired — E minor, 3 ripetizioni complete
-    // da-da-da DUM | da-da DUM | da-da-da DUM-DUM
+    // ♪ "Eye of the Tiger" inspired — ritmo iconico a gruppi
+    // DUH-duh-duh [pausa] DUH-duh [pausa] DUH-duh-duh-DUH
+    // Note: C4=262, Ab3=208, Bb3=233, G3=196, F3=175
     notePattern: [
-      // — Strofa 1 —
-      {l:1,t:1200,f:165},  // E3
-      {l:0,t:1600,f:165},  // E3
-      {l:1,t:1900,f:196},  // G3
-      {l:2,t:2500,f:220},  // A3 DUM
-      {l:0,t:3400,f:165},  // E3
-      {l:1,t:3700,f:196},  // G3
-      {l:2,t:4300,f:220},  // A3 DUM
-      {l:0,t:5200,f:165},  // E3
-      {l:1,t:5500,f:196},  // G3
-      {l:2,t:6100,f:220},  // A3
-      {l:2,t:6700,f:247},  // B3 DUM
-      // — Strofa 2 —
-      {l:1,t:7500,f:165},
-      {l:0,t:7900,f:165},
-      {l:1,t:8200,f:196},
-      {l:2,t:8800,f:220},
-      {l:0,t:9700,f:165},
-      {l:1,t:10000,f:196},
-      {l:2,t:10600,f:220},
-      {l:0,t:11500,f:165},
-      {l:1,t:11800,f:196},
-      {l:2,t:12400,f:220},
-      {l:2,t:13000,f:247},
-      // — Strofa 3 (climax) —
-      {l:1,t:13800,f:165},
-      {l:0,t:14200,f:165},
-      {l:1,t:14500,f:196},
-      {l:2,t:15100,f:220},
-      {l:0,t:16000,f:165},
-      {l:1,t:16300,f:196},
-      {l:2,t:16900,f:247},
-      {l:2,t:17500,f:262},
-      {l:1,t:18300,f:220},
-      {l:0,t:18900,f:196},
+      // — Gruppo 1: DUH-duh-duh —
+      {l:2,t:1500,f:262},  // C4  DUH (forte)
+      {l:1,t:2000,f:208},  // Ab3 duh
+      {l:0,t:2400,f:208},  // Ab3 duh
+      // [pausa ~1sec]
+      // — Gruppo 2: DUH-duh —
+      {l:2,t:3600,f:262},  // C4  DUH
+      {l:1,t:4100,f:233},  // Bb3 duh
+      // [pausa ~1sec]
+      // — Gruppo 3: DUH-duh-duh-DUH —
+      {l:2,t:5300,f:262},  // C4  DUH
+      {l:1,t:5700,f:208},  // Ab3 duh
+      {l:0,t:6100,f:196},  // G3  duh
+      {l:2,t:6700,f:262},  // C4  DUH finale
+      // [pausa ~1.5sec]
+      // — Ripetizione 1 —
+      {l:2,t:8400,f:262},
+      {l:1,t:8900,f:208},
+      {l:0,t:9300,f:208},
+      {l:2,t:10500,f:262},
+      {l:1,t:11000,f:233},
+      {l:2,t:12200,f:262},
+      {l:1,t:12600,f:208},
+      {l:0,t:13000,f:196},
+      {l:2,t:13600,f:262},
+      // — Ripetizione 2 (climax) —
+      {l:2,t:15300,f:262},
+      {l:1,t:15800,f:208},
+      {l:0,t:16200,f:208},
+      {l:2,t:17400,f:262},
+      {l:1,t:17900,f:233},
+      {l:2,t:19100,f:262},
+      {l:1,t:19500,f:208},
+      {l:0,t:19900,f:196},
+      {l:2,t:20500,f:262},
     ]
   },
   {
@@ -829,8 +830,8 @@ const LANES = [
 const LANE_W      = 80;
 const NOTE_R      = 24;
 const TRIGGER_Y   = 500;
-const TRAVEL_MS   = 3400;  // very slow fall = easy to read and hit
-const HIT_WINDOW  = 280;   // very forgiving timing window
+const TRAVEL_MS   = 4200;  // very slow fall = easy to read ahead
+const HIT_WINDOW  = 420;   // super forgiving — almost impossible to miss
 const GAME_DUR    = 22000; // 22 sec to fit denser patterns
 
 // ═══════════════════════════════════════════════
