@@ -494,45 +494,41 @@ const LEVELS_DATA = [
     hint: "💡 La struttura corretta prevede:\n• Prefisso \"Lyrics:\" per separare il testo\n• Tag di sezione: [Verse 1], [Chorus], [Bridge]\n• Parentesi tonde per cori/echi: (YF&K!)\n• Istruzioni musicali PRIMA del testo\n• Il modello legge le due parti separatamente!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 3:",
     unlockedPrompt: "Brano synth-rock energetico, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
-    // ♪ "Eye of the Tiger" inspired — ritmo iconico a gruppi
-    // DUH-duh-duh [pausa] DUH-duh [pausa] DUH-duh-duh-DUH
-    // Note: C4=262, Ab3=208, Bb3=233, G3=196, F3=175
+    // ♪ "Come As You Are" inspired (Nirvana) — trasportato in F
+    // Riff: F3-G3-Bb3-C4-Bb3-G3-F3-F3 (melodia discendente/ascendente)
+    // F3=175, G3=196, Bb3=233, C4=262
     notePattern: [
-      // — Gruppo 1: DUH-duh-duh —
-      {l:2,t:1500,f:262},  // C4  DUH (forte)
-      {l:1,t:2000,f:208},  // Ab3 duh
-      {l:0,t:2400,f:208},  // Ab3 duh
-      // [pausa ~1sec]
-      // — Gruppo 2: DUH-duh —
-      {l:2,t:3600,f:262},  // C4  DUH
-      {l:1,t:4100,f:233},  // Bb3 duh
-      // [pausa ~1sec]
-      // — Gruppo 3: DUH-duh-duh-DUH —
-      {l:2,t:5300,f:262},  // C4  DUH
-      {l:1,t:5700,f:208},  // Ab3 duh
-      {l:0,t:6100,f:196},  // G3  duh
-      {l:2,t:6700,f:262},  // C4  DUH finale
-      // [pausa ~1.5sec]
+      // — Riff 1: salita —
+      {l:0,t:1500,f:175},  // F3
+      {l:0,t:2100,f:175},  // F3
+      {l:1,t:2700,f:196},  // G3
+      {l:2,t:3400,f:233},  // Bb3
+      {l:2,t:4100,f:262},  // C4 (cima)
+      // — Riff 2: discesa —
+      {l:2,t:4900,f:233},  // Bb3
+      {l:1,t:5500,f:196},  // G3
+      {l:0,t:6100,f:175},  // F3
+      {l:0,t:6700,f:175},  // F3 (riposo)
       // — Ripetizione 1 —
-      {l:2,t:8400,f:262},
-      {l:1,t:8900,f:208},
-      {l:0,t:9300,f:208},
-      {l:2,t:10500,f:262},
-      {l:1,t:11000,f:233},
-      {l:2,t:12200,f:262},
-      {l:1,t:12600,f:208},
-      {l:0,t:13000,f:196},
-      {l:2,t:13600,f:262},
-      // — Ripetizione 2 (climax) —
-      {l:2,t:15300,f:262},
-      {l:1,t:15800,f:208},
-      {l:0,t:16200,f:208},
-      {l:2,t:17400,f:262},
-      {l:1,t:17900,f:233},
-      {l:2,t:19100,f:262},
-      {l:1,t:19500,f:208},
-      {l:0,t:19900,f:196},
-      {l:2,t:20500,f:262},
+      {l:0,t:7700,f:175},
+      {l:0,t:8300,f:175},
+      {l:1,t:8900,f:196},
+      {l:2,t:9600,f:233},
+      {l:2,t:10300,f:262},
+      {l:2,t:11100,f:233},
+      {l:1,t:11700,f:196},
+      {l:0,t:12300,f:175},
+      {l:0,t:12900,f:175},
+      // — Variazione finale: aggiunge nota alta —
+      {l:0,t:13900,f:175},
+      {l:1,t:14500,f:196},
+      {l:2,t:15100,f:233},
+      {l:2,t:15700,f:262},
+      {l:2,t:16300,f:294},  // D4 — nota extra più alta
+      {l:2,t:16900,f:262},
+      {l:2,t:17500,f:233},
+      {l:1,t:18100,f:196},
+      {l:0,t:18700,f:175},
     ]
   },
   {
@@ -552,51 +548,46 @@ const LEVELS_DATA = [
     hint: "💡 Il workflow ottimale per i profili vocali:\n• Definisci: estensione, timbro, stile (es. roca, granulosa)\n• Usa lyria-3-clip-preview per test rapidi a 30 secondi\n• Itera sul prompt vocale prima di spendere risorse\n• Solo dopo: passa a lyria-3 per la versione completa!\n• Human in the Loop: tu guidi, l'AI esegue!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 4 (BOSS):",
     unlockedPrompt: "Vocal persona: Weathered Rocker (uomo), voce roca e ruvida, timbro granuloso, vibrato controllato.\nModel: lyria-3-clip-preview\n→ Test rapido 30 sec → Affina prompt vocale\n→ Versione finale: lyria-3 completo",
-    // ♪ "Iron Man"/"Enter Sandman" inspired — BOSS riff pesante, 3 round
-    // B2-D3-E3-E3 / G3-F#3-E3 ripetuto con escalation finale
+    // ♪ "Paranoid" inspired (Black Sabbath) — trasportato, riff veloce E minor
+    // Riff: E3-E3-E3-G3-A3-G3-E3 / D3-E3 (super riconoscibile)
+    // E3=165, G3=196, A3=220, D3=147
     notePattern: [
-      // — Round 1 —
-      {l:0,t:1000,f:123},  // B2
-      {l:0,t:1500,f:147},  // D3
-      {l:1,t:1900,f:165},  // E3
-      {l:1,t:2300,f:165},  // E3
-      {l:2,t:2800,f:196},  // G3
-      {l:2,t:3200,f:185},  // F#3
-      {l:1,t:3700,f:165},  // E3
-      // — Round 2 —
-      {l:0,t:4500,f:123},
-      {l:0,t:5000,f:147},
-      {l:1,t:5400,f:165},
-      {l:1,t:5800,f:165},
-      {l:2,t:6300,f:196},
-      {l:2,t:6700,f:185},
-      {l:1,t:7200,f:165},
-      // — Variazione —
-      {l:0,t:8000,f:123},
-      {l:0,t:8500,f:147},
-      {l:1,t:8900,f:165},
-      {l:2,t:9400,f:196},
-      {l:2,t:9800,f:185},
-      {l:1,t:10300,f:165},
-      // — Round 3 escalation —
-      {l:0,t:11100,f:123},
-      {l:0,t:11500,f:147},
-      {l:1,t:11900,f:165},
-      {l:1,t:12300,f:165},
-      {l:2,t:12700,f:196},
-      {l:2,t:13100,f:185},
-      {l:1,t:13500,f:165},
-      // — Finale epico —
-      {l:0,t:14300,f:123},
-      {l:0,t:14700,f:147},
-      {l:1,t:15100,f:165},
+      // — Riff 1 —
+      {l:1,t:1000,f:165},  // E3
+      {l:1,t:1500,f:165},  // E3
+      {l:1,t:2000,f:165},  // E3
+      {l:2,t:2500,f:196},  // G3
+      {l:2,t:3000,f:220},  // A3
+      {l:1,t:3500,f:196},  // G3
+      {l:1,t:4000,f:165},  // E3
+      {l:0,t:4600,f:147},  // D3
+      {l:1,t:5100,f:165},  // E3
+      // — Riff 2 —
+      {l:1,t:6000,f:165},
+      {l:1,t:6500,f:165},
+      {l:1,t:7000,f:165},
+      {l:2,t:7500,f:196},
+      {l:2,t:8000,f:220},
+      {l:1,t:8500,f:196},
+      {l:1,t:9000,f:165},
+      {l:0,t:9600,f:147},
+      {l:1,t:10100,f:165},
+      // — Variazione con salita —
+      {l:1,t:11000,f:165},
+      {l:2,t:11500,f:196},
+      {l:2,t:12000,f:220},
+      {l:2,t:12500,f:247},  // B3 — più alto
+      {l:2,t:13000,f:220},
+      {l:1,t:13500,f:196},
+      {l:1,t:14000,f:165},
+      // — Finale martellante —
+      {l:1,t:15000,f:165},
       {l:1,t:15500,f:165},
-      {l:2,t:15900,f:196},
-      {l:2,t:16300,f:220},  // A3 — nota finale più alta
-      {l:1,t:16800,f:185},
-      {l:0,t:17400,f:165},
-      {l:2,t:18000,f:196},
-      {l:2,t:18600,f:220},
+      {l:1,t:16000,f:165},
+      {l:2,t:16500,f:196},
+      {l:2,t:17000,f:220},
+      {l:0,t:17500,f:147},
+      {l:1,t:18000,f:165},
     ]
   }
 ];
@@ -920,11 +911,12 @@ function drawZally(cx, cy, scale, t) {
 
   if (!zallyImgLoaded) return;
 
-  const baseH = 260;
+  const baseH = 220;
   const aspect = zallyImg.naturalWidth / zallyImg.naturalHeight;
   const h = baseH * scale, w = h * aspect;
   ctx.save();
-  ctx.shadowBlur = 18;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.shadowBlur = 14;
   ctx.shadowColor = 'rgba(255,102,0,0.5)';
   ctx.drawImage(zallyImg, cx - w / 2, cy - h * 0.62 + bob, w, h);
   ctx.restore();
@@ -1163,7 +1155,7 @@ function renderMenu(t) {
   ctx.fillText('4 LEVELS  |  70% DIDATTICA  |  30% GIOCO  |  HUMAN IN THE LOOP', W / 2, 198);
 
   // Zally
-  drawZally(W / 2, 390, 1.3, t);
+  drawZally(W / 2, 400, 0.85, t);
 
   // PRESS ENTER (blink)
   if (Math.floor(t / 550) % 2 === 0) {
@@ -1370,8 +1362,9 @@ function renderGameplay(ts) {
   ctx.fillRect(0, 0, W * tfrac, 7);
   ctx.shadowBlur = 0;
 
-  // Check end
-  if (el >= GAME_DUR && !game.levelDone) {
+  // End level: 2s after last note OR when GAME_DUR elapsed
+  const lastNoteTime = game.notes.length ? Math.max(...game.notes.map(n => n.hitTime)) : 0;
+  if (!game.levelDone && (el >= lastNoteTime + 2000 || el >= GAME_DUR)) {
     game.levelDone = true;
     setTimeout(levelComplete, 600);
   }
