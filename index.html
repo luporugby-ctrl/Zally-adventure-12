@@ -649,63 +649,48 @@ function makeDistortionCurve(amount) {
   return curve;
 }
 
-// Single-note electric guitar — light overdrive only, no power chord
-// Pitch is clear and melody is recognizable
-function playGuitar(freq, sustain = 0.32, vol = 0.52) {
+// Clean bell/pluck tone — sine fundamental + harmonic overtones, no distortion
+// Pitch is crystal clear, melodies are immediately recognizable
+function playGuitar(freq, sustain = 0.55, vol = 0.52) {
   try {
     const ac = getAC();
     const t = ac.currentTime;
 
-    const masterGain = ac.createGain();
-    masterGain.gain.setValueAtTime(0.001, t);
-    masterGain.gain.linearRampToValueAtTime(vol, t + 0.010);
-    masterGain.gain.setValueAtTime(vol, t + 0.025);
-    masterGain.gain.exponentialRampToValueAtTime(0.001, t + sustain);
+    // Layered harmonics: fundamental + 2nd + 3rd (natural overtone series)
+    // Volumes taper off so fundamental dominates → pitch is unambiguous
+    const partials = [
+      { mult: 1.0, type: 'sine',     gain: 1.00 },
+      { mult: 2.0, type: 'sine',     gain: 0.28 },
+      { mult: 3.0, type: 'triangle', gain: 0.10 },
+    ];
 
-    // Light overdrive — amount 28 vs old 300, pitch stays clear
-    const waver = ac.createWaveShaper();
-    waver.curve = makeDistortionCurve(28);
-    waver.oversample = '2x';
-
-    // Presence boost (cuts through without muddying pitch)
-    const eq = ac.createBiquadFilter();
-    eq.type = 'peaking';
-    eq.frequency.value = 2800;
-    eq.gain.value = 5;
-    eq.Q.value = 1.0;
-
-    // Higher cutoff so harmonics stay audible → pitch more distinct
-    const hicut = ac.createBiquadFilter();
-    hicut.type = 'lowpass';
-    hicut.frequency.value = 8000;
-
-    waver.connect(eq);
-    eq.connect(hicut);
-    hicut.connect(masterGain);
-    masterGain.connect(ac.destination);
-
-    // Single note: sawtooth root only + subtle octave for body (very quiet)
-    [[freq, 'sawtooth', 1.0, -3], [freq * 2, 'triangle', 0.10, 0]].forEach(([f, type, gain, detune]) => {
+    partials.forEach(({ mult, type, gain }) => {
       const osc = ac.createOscillator();
       const og  = ac.createGain();
       osc.type = type;
-      osc.frequency.value = f;
-      osc.detune.value = detune;
-      og.gain.value = gain;
+      osc.frequency.value = freq * mult;
+
+      // Each partial decays at its own speed (higher = faster, like a real string)
+      og.gain.setValueAtTime(0.001, t);
+      og.gain.linearRampToValueAtTime(vol * gain, t + 0.006);
+      og.gain.exponentialRampToValueAtTime(vol * gain * 0.6, t + 0.04);
+      og.gain.exponentialRampToValueAtTime(0.0001, t + sustain * (1 / mult));
+
       osc.connect(og);
-      og.connect(waver);
+      og.connect(ac.destination);
       osc.start(t);
-      osc.stop(t + sustain + 0.05);
+      osc.stop(t + sustain + 0.1);
     });
 
-    // Pick attack noise (kept but quieter)
-    const nBuf = ac.createBuffer(1, ac.sampleRate * 0.014, ac.sampleRate);
+    // Soft attack click (fingerpick texture, very subtle)
+    const nBuf = ac.createBuffer(1, ac.sampleRate * 0.010, ac.sampleRate);
     const nd = nBuf.getChannelData(0);
-    for (let j = 0; j < nd.length; j++) nd[j] = (Math.random() * 2 - 1) * Math.exp(-j / (ac.sampleRate * 0.003));
+    for (let j = 0; j < nd.length; j++)
+      nd[j] = (Math.random() * 2 - 1) * Math.exp(-j / (ac.sampleRate * 0.002));
     const nSrc = ac.createBufferSource();
     nSrc.buffer = nBuf;
     const nGain = ac.createGain();
-    nGain.gain.value = 0.08;
+    nGain.gain.value = 0.06;
     nSrc.connect(nGain);
     nGain.connect(ac.destination);
     nSrc.start(t);
