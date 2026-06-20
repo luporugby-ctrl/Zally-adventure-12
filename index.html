@@ -269,22 +269,24 @@
     /* ─── REPLAY BUTTON ─── */
     #replayBtn {
       position: absolute;
-      top: 10px;
-      right: 14px;
-      background: rgba(0,0,0,0.6);
-      border: 2px solid #ff6600;
-      color: #ff6600;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      border: 3px solid #ccff00;
+      color: #ccff00;
       font-family: 'Press Start 2P', monospace;
-      font-size: 6px;
-      padding: 7px 11px;
+      font-size: 9px;
+      padding: 14px 28px;
       cursor: pointer;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
       display: none;
       z-index: 45;
+      box-shadow: 0 0 20px rgba(204,255,0,0.5);
       transition: all 0.15s;
     }
     #replayBtn.active { display: block; }
-    #replayBtn:hover { background: #ff6600; color: #000; box-shadow: 0 0 12px rgba(255,102,0,0.7); }
+    #replayBtn:hover { background: #ccff00; color: #000; box-shadow: 0 0 35px rgba(204,255,0,0.9); }
 
     /* ─── MOBILE TOUCH CONTROLS ─── */
     #touchControls {
@@ -1472,7 +1474,7 @@ function startGameplay() {
   overlay.classList.remove('active');
   hudEl.classList.add('active');
   touchControls.classList.add('active');
-  replayBtn.classList.add('active');
+  replayBtn.classList.remove('active');
   game.screen = 'PLAYING';
   game.score = 0;
   game.volumeMix = 10;
@@ -1499,7 +1501,7 @@ function replayTrack() {
   prepareNotes(LEVELS_DATA[game.levelIndex]);
   hudEl.classList.add('active');
   touchControls.classList.add('active');
-  replayBtn.classList.add('active');
+  replayBtn.classList.remove('active');
   updateHUD();
   startBeat();
 }
@@ -1521,13 +1523,14 @@ function levelComplete() {
   game.screen = 'LEVEL_COMPLETE';
   hudEl.classList.remove('active');
   touchControls.classList.remove('active');
-  replayBtn.classList.remove('active');
+  replayBtn.classList.add('active');
 
   if (game.levelIndex < LEVELS_DATA.length - 1) {
     game.levelIndex++;
-    setTimeout(() => showQuestion(game.levelIndex), 2200);
+    setTimeout(() => { replayBtn.classList.remove('active'); showQuestion(game.levelIndex); }, 2200);
   } else {
     setTimeout(() => {
+      replayBtn.classList.remove('active');
       game.screen = 'TRANSMITTING';
       game.transmitStart = performance.now();
     }, 2200);
