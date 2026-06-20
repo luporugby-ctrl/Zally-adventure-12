@@ -256,6 +256,28 @@
       box-shadow: 0 0 30px rgba(204,255,0,0.8);
     }
 
+    /* ─── REPLAY BUTTON ─── */
+    #replayBtn {
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      border: 3px solid #ccff00;
+      color: #ccff00;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      padding: 14px 28px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      display: none;
+      z-index: 45;
+      box-shadow: 0 0 20px rgba(204,255,0,0.5);
+      transition: all 0.15s;
+    }
+    #replayBtn.active { display: block; }
+    #replayBtn:hover { background: #ccff00; color: #000; box-shadow: 0 0 35px rgba(204,255,0,0.9); }
+
     /* ─── MOBILE TOUCH CONTROLS ─── */
     #touchControls {
       position: absolute;
@@ -315,6 +337,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Replay track button (visible after level complete) -->
+  <button id="replayBtn" onclick="replayTrack()">↩ REPLAY</button>
 
   <!-- Victory overlay with reset button -->
   <div id="victoryOverlay">
@@ -426,14 +451,31 @@ const LEVELS_DATA = [
     hint: "💡 The correct structure requires:\n• \"Lyrics:\" prefix to separate the text\n• Section tags: [Verse 1], [Chorus], [Bridge]\n• Round brackets for backing vocals/echoes: (YF&K!)\n• Musical instructions BEFORE the lyrics\n• The model reads the two parts separately!",
     promptLabel: "UNLOCKED PROMPT — LEVEL 3:",
     unlockedPrompt: "Energetic synth-rock track, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
-    // ♪ "Basket Case" (Green Day) — Eb-Bb-C-G-Ab-Eb-Bb
-    // Eb3=156, Bb3=233, C4=262, G3=196, Ab3=208
+    // ♪ "Jump" (Van Halen, 1984) — REAL INTRO: G-C-G-F-C-Bb-C + fill G-E-C
+    // G3=196, C4=262, F3=175, Bb3=233, E3=165, C3=131
+    // Lane: 0=F3/E3/C3 (low), 1=G3 (mid), 2=Bb3/C4 (high)
     notePattern: [
-      {l:0,t:1000,f:156},{l:1,t:1500,f:233},{l:2,t:2000,f:262},{l:0,t:2500,f:196},{l:1,t:3000,f:208},{l:0,t:3500,f:156},{l:1,t:4000,f:233},
-      {l:0,t:4700,f:156},{l:1,t:5200,f:233},{l:2,t:5700,f:262},{l:0,t:6200,f:196},{l:1,t:6700,f:208},{l:0,t:7200,f:156},{l:1,t:7700,f:233},
-      {l:0,t:8400,f:156},{l:1,t:8900,f:233},{l:2,t:9400,f:262},{l:0,t:9900,f:196},{l:1,t:10400,f:208},{l:0,t:10900,f:156},{l:1,t:11400,f:233},
-      {l:0,t:12100,f:156},{l:1,t:12600,f:233},{l:2,t:13100,f:262},{l:0,t:13600,f:196},{l:1,t:14100,f:208},{l:0,t:14600,f:156},{l:1,t:15100,f:233},
-      {l:0,t:15800,f:156},{l:1,t:16300,f:233},{l:2,t:16800,f:262},{l:0,t:17300,f:196},{l:1,t:17800,f:208},{l:0,t:18300,f:156},{l:1,t:18800,f:233},
+      // — Round 1: G-G / C-C / G-G / F-C / Bb-C / fill G-E-C —
+      {l:1,t:500,f:196},{l:1,t:1000,f:196},
+      {l:2,t:1600,f:262},{l:2,t:2100,f:262},
+      {l:1,t:2700,f:196},{l:1,t:3200,f:196},
+      {l:0,t:3800,f:175},{l:2,t:4300,f:262},
+      {l:2,t:4800,f:233},{l:2,t:5300,f:262},
+      {l:1,t:5900,f:196},{l:0,t:6400,f:165},{l:0,t:6900,f:131},
+      // — Round 2 —
+      {l:1,t:7600,f:196},{l:1,t:8100,f:196},
+      {l:2,t:8700,f:262},{l:2,t:9200,f:262},
+      {l:1,t:9800,f:196},{l:1,t:10300,f:196},
+      {l:0,t:10900,f:175},{l:2,t:11400,f:262},
+      {l:2,t:11900,f:233},{l:2,t:12400,f:262},
+      {l:1,t:13000,f:196},{l:0,t:13500,f:165},{l:0,t:14000,f:131},
+      // — Round 3 —
+      {l:1,t:14700,f:196},{l:1,t:15200,f:196},
+      {l:2,t:15800,f:262},{l:2,t:16300,f:262},
+      {l:1,t:16900,f:196},{l:1,t:17400,f:196},
+      {l:0,t:18000,f:175},{l:2,t:18500,f:262},
+      {l:2,t:19000,f:233},{l:2,t:19500,f:262},
+      {l:1,t:20100,f:196},{l:0,t:20600,f:165},{l:0,t:21100,f:131},
     ]
   },
   {
@@ -453,14 +495,34 @@ const LEVELS_DATA = [
     hint: "💡 Optimal workflow for vocal profiles:\n• Define: range, timbre, style (e.g. rough, grainy)\n• Use lyria-3-clip-preview for quick 30-second tests\n• Iterate on the vocal prompt before spending resources\n• Only then: move to lyria-3 for the full version!\n• Human in the Loop: you guide, the AI executes!",
     promptLabel: "UNLOCKED PROMPT — LEVEL 4 (BOSS):",
     unlockedPrompt: "Vocal persona: Weathered Rocker (male), rough and raspy voice, grainy timbre, controlled vibrato.\nModel: lyria-3-clip-preview\n→ Quick 30-sec test → Refine vocal prompt\n→ Final version: full lyria-3",
-    // ♪ "Thunderstruck" (AC/DC) — A-A-B-A-B-A-G-A gallop
-    // A3=220 (lane1), B3=247 (lane2), G3=196 (lane0), D4=294 (lane2)
+    // ♪ "Eye of the Tiger" (Survivor, 1982) — faithful riff with Ab (minor color)
+    // Punches: G-G-G / Eb-Bb  then full riff: C-C-Eb-C-Bb-Ab-G
+    // G3=196, Ab3=208, Bb3=233, C4=262, Eb4=311
+    // Lane: 0=G3 (low), 1=Ab3/Bb3 (mid), 2=C4/Eb4 (high)
     notePattern: [
-      {l:1,t:1000,f:220},{l:1,t:1500,f:220},{l:2,t:2000,f:247},{l:1,t:2500,f:220},{l:2,t:3000,f:247},{l:1,t:3500,f:220},{l:0,t:4000,f:196},{l:1,t:4500,f:220},
-      {l:1,t:5200,f:220},{l:1,t:5700,f:220},{l:2,t:6200,f:247},{l:1,t:6700,f:220},{l:2,t:7200,f:294},{l:1,t:7700,f:220},{l:0,t:8200,f:196},{l:1,t:8700,f:220},
-      {l:1,t:9400,f:220},{l:1,t:9900,f:220},{l:2,t:10400,f:247},{l:1,t:10900,f:220},{l:2,t:11400,f:247},{l:1,t:11900,f:220},{l:0,t:12400,f:196},{l:1,t:12900,f:220},
-      {l:1,t:13600,f:220},{l:1,t:14100,f:220},{l:2,t:14600,f:294},{l:1,t:15100,f:220},{l:2,t:15600,f:247},{l:1,t:16100,f:220},{l:0,t:16600,f:196},{l:1,t:17100,f:220},
-      {l:1,t:17800,f:220},{l:1,t:18300,f:220},{l:2,t:18800,f:247},{l:1,t:19300,f:220},{l:2,t:19800,f:247},{l:1,t:20300,f:220},{l:0,t:20800,f:196},{l:1,t:21300,f:220},
+      // — Iconic punches: G-G-G / Eb-Bb —
+      {l:0,t:800,f:196},{l:0,t:1300,f:196},{l:0,t:1800,f:196},
+      {l:2,t:2400,f:311},{l:1,t:2900,f:233},
+      // — Punches ×2 —
+      {l:0,t:3600,f:196},{l:0,t:4100,f:196},{l:0,t:4600,f:196},
+      {l:2,t:5200,f:311},{l:1,t:5700,f:233},
+      // — Full riff: C-C-Eb-C-Bb-Ab-G (includes Ab!) —
+      {l:2,t:6400,f:262},{l:2,t:6900,f:262},
+      {l:2,t:7400,f:311},{l:2,t:7900,f:262},
+      {l:1,t:8400,f:233},{l:1,t:8900,f:208},{l:0,t:9400,f:196},
+      // — Round 2: punches + riff —
+      {l:0,t:10200,f:196},{l:0,t:10700,f:196},{l:0,t:11200,f:196},
+      {l:2,t:11800,f:311},{l:1,t:12300,f:233},
+      {l:2,t:13000,f:262},{l:2,t:13500,f:262},
+      {l:2,t:14000,f:311},{l:2,t:14500,f:262},
+      {l:1,t:15000,f:233},{l:1,t:15500,f:208},{l:0,t:16000,f:196},
+      // — Round 3 (climax): double punches + extended riff —
+      {l:0,t:16800,f:196},{l:0,t:17200,f:196},{l:0,t:17600,f:196},
+      {l:2,t:18100,f:311},{l:1,t:18600,f:233},
+      {l:0,t:19200,f:196},{l:0,t:19600,f:196},{l:0,t:20000,f:196},
+      {l:2,t:20500,f:311},{l:1,t:21000,f:233},
+      {l:2,t:21600,f:262},{l:2,t:22100,f:311},
+      {l:1,t:22600,f:233},{l:1,t:23100,f:208},{l:0,t:23600,f:196},
     ]
   }
 ];
@@ -481,6 +543,7 @@ const barVolume     = document.getElementById('barVolume');
 const barStar       = document.getElementById('barStar');
 const victoryOverlay= document.getElementById('victoryOverlay');
 const touchControls = document.getElementById('touchControls');
+const replayBtn     = document.getElementById('replayBtn');
 
 // ═══════════════════════════════════════════════
 //  AUDIO ENGINE — Electric Guitar (Web Audio API)
@@ -657,7 +720,7 @@ const NOTE_R      = 24;
 const TRIGGER_Y   = 500;
 const TRAVEL_MS   = 4200;
 const HIT_WINDOW  = 420;
-const GAME_DUR    = 24000;
+const GAME_DUR    = 28000; // safety ceiling — level always ends via lastNoteTime+800 first
 
 // ═══════════════════════════════════════════════
 //  GAME STATE
@@ -1261,6 +1324,7 @@ function startGameplay() {
   overlay.classList.remove('active');
   hudEl.classList.add('active');
   touchControls.classList.add('active');
+  replayBtn.classList.remove('active');
   game.screen = 'PLAYING';
   game.score = 0;
   game.volumeMix = 10;
@@ -1274,6 +1338,24 @@ function startGameplay() {
   startBeat();
 }
 
+function replayTrack() {
+  stopBeat();
+  game.score = 0;
+  game.volumeMix = 10;
+  game.starPower = 0;
+  game.levelDone = false;
+  game.flashFx = null;
+  game.comboText = null;
+  game.screen = 'PLAYING';
+  game.gameStart = performance.now();
+  prepareNotes(LEVELS_DATA[game.levelIndex]);
+  hudEl.classList.add('active');
+  touchControls.classList.add('active');
+  replayBtn.classList.remove('active');
+  updateHUD();
+  startBeat();
+}
+
 function restartLevel() {
   stopBeat();
   game.flashFx = null;
@@ -1281,6 +1363,7 @@ function restartLevel() {
   game.screen = 'QUESTION';
   hudEl.classList.remove('active');
   touchControls.classList.remove('active');
+  replayBtn.classList.remove('active');
   showQuestion(game.levelIndex);
 }
 
@@ -1290,11 +1373,14 @@ function levelComplete() {
   game.screen = 'LEVEL_COMPLETE';
   hudEl.classList.remove('active');
   touchControls.classList.remove('active');
+  replayBtn.classList.add('active');
+
   if (game.levelIndex < LEVELS_DATA.length - 1) {
     game.levelIndex++;
-    setTimeout(() => showQuestion(game.levelIndex), 2200);
+    setTimeout(() => { replayBtn.classList.remove('active'); showQuestion(game.levelIndex); }, 2200);
   } else {
     setTimeout(() => {
+      replayBtn.classList.remove('active');
       game.screen = 'TRANSMITTING';
       game.transmitStart = performance.now();
     }, 2200);
@@ -1316,6 +1402,7 @@ function resetGame() {
   overlay.classList.remove('active');
   hudEl.classList.remove('active');
   touchControls.classList.remove('active');
+  replayBtn.classList.remove('active');
   victoryOverlay.classList.remove('active');
   updateHUD();
 }
