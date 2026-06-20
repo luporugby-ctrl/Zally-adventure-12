@@ -494,29 +494,30 @@ const LEVELS_DATA = [
     hint: "💡 La struttura corretta prevede:\n• Prefisso \"Lyrics:\" per separare il testo\n• Tag di sezione: [Verse 1], [Chorus], [Bridge]\n• Parentesi tonde per cori/echi: (YF&K!)\n• Istruzioni musicali PRIMA del testo\n• Il modello legge le due parti separatamente!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 3:",
     unlockedPrompt: "Brano synth-rock energetico, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
-    // ♪ "Popcorn" (Hot Butter / Gershon Kingsley) — melodia elettronica iconica
-    // Frase A: B-A-B-G-B-D-C  |  Frase B: B-A-B-G-B  |  Frase C (alta): D-C-B-C-D-B
-    // G3=196, A3=220, B3=247, C4=262, D4=294
-    // Lane: 0=G/A (bassi), 1=B (medi), 2=C/D (alti)
+    // ♪ "Jump" (Van Halen, 1984) — synth keyboard iconico
+    // Arco C-E-G-E-C (su e giù) poi variazione alta A
+    // C4=262, D4=294, E4=330, G4=392, A4=440
+    // Lane: 0=C4 (basso), 1=D4/E4 (medio), 2=G4/A4 (alto)
     notePattern: [
-      // — Frase A —
-      {l:1,t:1000,f:247},{l:0,t:1500,f:220},{l:1,t:2000,f:247},
-      {l:0,t:2500,f:196},{l:1,t:3000,f:247},{l:2,t:3500,f:294},{l:2,t:4000,f:262},
-      // — Frase B —
-      {l:1,t:4700,f:247},{l:0,t:5200,f:220},{l:1,t:5700,f:247},
-      {l:0,t:6200,f:196},{l:1,t:6700,f:247},
-      // — Frase C alta —
-      {l:2,t:7600,f:294},{l:2,t:8100,f:262},{l:1,t:8600,f:247},
-      {l:2,t:9100,f:262},{l:2,t:9600,f:294},{l:1,t:10100,f:247},
-      // — Ripetizione A —
-      {l:1,t:10900,f:247},{l:0,t:11400,f:220},{l:1,t:11900,f:247},
-      {l:0,t:12400,f:196},{l:1,t:12900,f:247},{l:2,t:13400,f:294},{l:2,t:13900,f:262},
-      // — Ripetizione B —
-      {l:1,t:14600,f:247},{l:0,t:15100,f:220},{l:1,t:15600,f:247},
-      {l:0,t:16100,f:196},{l:1,t:16600,f:247},
-      // — Ripetizione C alta —
-      {l:2,t:17500,f:294},{l:2,t:18000,f:262},{l:1,t:18500,f:247},
-      {l:2,t:19000,f:262},{l:2,t:19500,f:294},{l:1,t:20000,f:247},
+      // — Frase 1: G-E-C-D-G (discesa poi risalita) —
+      {l:2,t:1000,f:392},{l:1,t:1500,f:330},{l:0,t:2000,f:262},
+      {l:1,t:2500,f:294},{l:2,t:3000,f:392},
+      // — Frase 1 ripetuta —
+      {l:2,t:3700,f:392},{l:1,t:4200,f:330},{l:0,t:4700,f:262},
+      {l:1,t:5200,f:294},{l:2,t:5700,f:392},
+      // — Frase alta: A-G-E-D-C-D-E —
+      {l:2,t:6400,f:440},{l:2,t:6900,f:392},{l:1,t:7400,f:330},
+      {l:1,t:7900,f:294},{l:0,t:8400,f:262},{l:1,t:8900,f:294},{l:1,t:9400,f:330},
+      // — Ripetizione frase 1 (×2) —
+      {l:2,t:10200,f:392},{l:1,t:10700,f:330},{l:0,t:11200,f:262},
+      {l:1,t:11700,f:294},{l:2,t:12200,f:392},
+      {l:2,t:12900,f:392},{l:1,t:13400,f:330},{l:0,t:13900,f:262},
+      {l:1,t:14400,f:294},{l:2,t:14900,f:392},
+      // — Ripetizione frase alta —
+      {l:2,t:15600,f:440},{l:2,t:16100,f:392},{l:1,t:16600,f:330},
+      {l:1,t:17100,f:294},{l:0,t:17600,f:262},{l:1,t:18100,f:294},{l:1,t:18600,f:330},
+      // — Chiusura: C-E-G —
+      {l:0,t:19300,f:262},{l:1,t:19800,f:330},{l:2,t:20300,f:392},
     ]
   },
   {
@@ -536,60 +537,33 @@ const LEVELS_DATA = [
     hint: "💡 Il workflow ottimale per i profili vocali:\n• Definisci: estensione, timbro, stile (es. roca, granulosa)\n• Usa lyria-3-clip-preview per test rapidi a 30 secondi\n• Itera sul prompt vocale prima di spendere risorse\n• Solo dopo: passa a lyria-3 per la versione completa!\n• Human in the Loop: tu guidi, l'AI esegue!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 4 (BOSS):",
     unlockedPrompt: "Vocal persona: Weathered Rocker (uomo), voce roca e ruvida, timbro granuloso, vibrato controllato.\nModel: lyria-3-clip-preview\n→ Test rapido 30 sec → Affina prompt vocale\n→ Versione finale: lyria-3 completo",
-    // ♪ "Take On Me" (A-ha, 1985) — synth riff iconico anni '80
-    // Frase A: F#-A-B-B-B-A-F#-A-B-B-A-B
-    // Frase B (alta): D-D-D-D-B-A-F#-A-B-B-A-B-F#
-    // F#4=370, A4=440, B4=494, D5=587
-    // Lane: 0=F#4 (basso), 1=A4 (medio), 2=B4/D5 (alto)
+    // ♪ "Eye of the Tiger" (Survivor, 1982) — riff da boss battle
+    // Punches: G-G-G / Eb-Bb  poi riff: C-C-Eb-C-Bb-G-G
+    // G3=196, Bb3=233, C4=262, Eb4=311
+    // Lane: 0=G3 (basso), 1=Bb3/C4 (medio), 2=Eb4 (alto)
     notePattern: [
-      // — Frase A —
-      {l:0,t:1000,f:370}, // F#4
-      {l:1,t:1450,f:440}, // A4
-      {l:2,t:1900,f:494}, // B4
-      {l:2,t:2350,f:494}, // B4
-      {l:2,t:2800,f:494}, // B4
-      {l:1,t:3250,f:440}, // A4
-      {l:0,t:3700,f:370}, // F#4
-      {l:1,t:4150,f:440}, // A4
-      {l:2,t:4600,f:494}, // B4
-      {l:2,t:5050,f:494}, // B4
-      {l:1,t:5500,f:440}, // A4
-      {l:2,t:5950,f:494}, // B4
-      // — Frase B alta —
-      {l:2,t:6600,f:587}, // D5
-      {l:2,t:7050,f:587}, // D5
-      {l:2,t:7500,f:587}, // D5
-      {l:2,t:7950,f:587}, // D5
-      {l:2,t:8400,f:494}, // B4
-      {l:1,t:8850,f:440}, // A4
-      {l:0,t:9300,f:370}, // F#4
-      {l:1,t:9750,f:440}, // A4
-      {l:2,t:10200,f:494},// B4
-      {l:2,t:10650,f:494},// B4
-      {l:1,t:11100,f:440},// A4
-      {l:2,t:11550,f:494},// B4
-      {l:0,t:12000,f:370},// F#4
-      // — Ripetizione A —
-      {l:0,t:12700,f:370},
-      {l:1,t:13150,f:440},
-      {l:2,t:13600,f:494},
-      {l:2,t:14050,f:494},
-      {l:2,t:14500,f:494},
-      {l:1,t:14950,f:440},
-      {l:0,t:15400,f:370},
-      {l:1,t:15850,f:440},
-      {l:2,t:16300,f:494},
-      {l:2,t:16750,f:494},
-      {l:1,t:17200,f:440},
-      {l:2,t:17650,f:494},
-      // — Ripetizione B alta —
-      {l:2,t:18300,f:587},
-      {l:2,t:18750,f:587},
-      {l:2,t:19200,f:587},
-      {l:2,t:19650,f:587},
-      {l:2,t:20100,f:494},
-      {l:1,t:20550,f:440},
-      {l:0,t:21000,f:370},
+      // — Punches iconici: G-G-G / Eb-Bb —
+      {l:0,t:800,f:196},{l:0,t:1300,f:196},{l:0,t:1800,f:196},
+      {l:2,t:2400,f:311},{l:1,t:2900,f:233},
+      // — Punches ×2 —
+      {l:0,t:3600,f:196},{l:0,t:4100,f:196},{l:0,t:4600,f:196},
+      {l:2,t:5200,f:311},{l:1,t:5700,f:233},
+      // — Riff verso: C-C-Eb-C-Bb-G-G —
+      {l:1,t:6400,f:262},{l:1,t:6900,f:262},
+      {l:2,t:7400,f:311},{l:1,t:7900,f:262},
+      {l:1,t:8400,f:233},{l:0,t:8900,f:196},{l:0,t:9400,f:196},
+      // — Punches ×3 —
+      {l:0,t:10200,f:196},{l:0,t:10700,f:196},{l:0,t:11200,f:196},
+      {l:2,t:11800,f:311},{l:1,t:12300,f:233},
+      {l:0,t:13000,f:196},{l:0,t:13500,f:196},{l:0,t:14000,f:196},
+      {l:2,t:14600,f:311},{l:1,t:15100,f:233},
+      // — Riff verso ×2 —
+      {l:1,t:15800,f:262},{l:1,t:16300,f:262},
+      {l:2,t:16800,f:311},{l:1,t:17300,f:262},
+      {l:1,t:17800,f:233},{l:0,t:18300,f:196},{l:0,t:18800,f:196},
+      // — Finale: punches + riff —
+      {l:0,t:19500,f:196},{l:0,t:20000,f:196},{l:0,t:20500,f:196},
+      {l:2,t:21000,f:311},{l:1,t:21500,f:233},{l:0,t:22000,f:196},
     ]
   }
 ];
