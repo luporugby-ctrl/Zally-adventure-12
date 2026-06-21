@@ -459,19 +459,20 @@ const LEVELS_DATA = [
     hint: "💡 I prompt vaghi producono risultati generici. Menziona SEMPRE:\n• Genere musicale\n• BPM (es. 120 BPM)\n• Era storica (es. anni '80)\n• Strumenti esatti\n• Come questi elementi interagiscono tra loro.",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 1:",
     unlockedPrompt: "\"Un brano synth-pop in stile anni '80 con un ritmo incalzante a 120 BPM, sintetizzatori brillanti, atmosfera retro-futuristica e un assolo di sassofono nel bridge.\"",
-    // ♪ "Smoke on the Water" — F# minor, lento e cadenzato (pulsazione 700ms)
-    // Riff: F#-A-B / F#-A-C#-B / F#-A-B / A-F#  (note lunghe tenute, pause tra le frasi)
+    // ♪ "Smoke on the Water" — F# minor, carattere SHORT-SHORT-LONG
+    // Riff 1: F#-A-B(tenuta) / Riff 2: F#-A-C#-B(tenuta) / Riff 3: F#-A-B-A-F#
+    // Intervalli: 8th≈380ms tight pair, poi pausa lunga ~1200ms tra frasi
     notePattern: [
       // — Round 1 —
-      {l:0,t:1500,f:185},{l:1,t:2200,f:220},{l:2,t:2900,f:247},                  // F#-A-B(tenuta)
-      {l:0,t:4300,f:185},{l:1,t:5000,f:220},{l:2,t:5700,f:277},{l:2,t:6400,f:247}, // F#-A-C#-B(tenuta)
-      {l:0,t:7800,f:185},{l:1,t:8500,f:220},{l:2,t:9200,f:247},                  // F#-A-B(tenuta)
-      {l:1,t:10600,f:220},{l:0,t:11300,f:185},                                   // A-F#(tenuta)
+      {l:0,t:1000,f:185},{l:1,t:1380,f:220},{l:2,t:1760,f:247},           // F#-A-B [short-short-LONG]
+      {l:0,t:2900,f:185},{l:1,t:3280,f:220},{l:2,t:3660,f:277},{l:2,t:4040,f:247}, // F#-A-C#-B [short-short-short-LONG]
+      {l:0,t:5400,f:185},{l:1,t:5780,f:220},{l:2,t:6160,f:247},{l:1,t:6920,f:220},{l:0,t:7680,f:185}, // F#-A-B-A-F# [variazione]
       // — Round 2 —
-      {l:0,t:12700,f:185},{l:1,t:13400,f:220},{l:2,t:14100,f:247},
-      {l:0,t:15500,f:185},{l:1,t:16200,f:220},{l:2,t:16900,f:277},{l:2,t:17600,f:247},
-      {l:0,t:19000,f:185},{l:1,t:19700,f:220},{l:2,t:20400,f:247},
-      {l:1,t:21800,f:220},{l:0,t:22500,f:185},
+      {l:0,t:9100,f:185},{l:1,t:9480,f:220},{l:2,t:9860,f:247},
+      {l:0,t:11000,f:185},{l:1,t:11380,f:220},{l:2,t:11760,f:277},{l:2,t:12140,f:247},
+      {l:0,t:13500,f:185},{l:1,t:13880,f:220},{l:2,t:14260,f:247},{l:1,t:15020,f:220},{l:0,t:15780,f:185},
+      // — Coda (Riff 1+2) —
+      {l:0,t:17200,f:185},{l:1,t:17580,f:220},{l:2,t:17960,f:277},{l:2,t:18340,f:247},
     ]
   },
   {
@@ -491,20 +492,30 @@ const LEVELS_DATA = [
     hint: "💡 Lyria 3.5 comprende la timeline in secondi!\nUsa:\n• Tag di struttura: [Intro], [Verse 1], [Pre-Chorus], [Chorus]\n• Frecce di progressione: [A] -> [B] -> [C]\n• Timing espliciti: \"Drop a 32 secondi\"\n• Descrittori di energia: \"crescendo esplosivo\"",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 2:",
     unlockedPrompt: "[Intro] -> Atmosfera tesa, 8 secondi -> [Verse 1] -> Energia crescente -> [Pre-Chorus] -> Drop a 32 secondi -> [Chorus] -> Esplosione ritmica con synth lead.",
-    // ♪ "Seven Nation Army" — in D, lento e cadenzato (pulsazione 650ms)
-    // Riff: D(lunga)-D-F-D-C-Bb / variazione D-F-G-F-D / chiusura discendente fino ad A
+    // ♪ "Seven Nation Army" — in D, carattere D(LUNGA)·D-F(tight)·D·C-Bb(tight)·A(BASSISSIMA LUNGA)
+    // Il riff: D long — coppia D-F ravvicinata — D — coppia C-Bb ravvicinata — A bassissima lunga
+    // Intervalli: D=800ms, coppia ±350ms, chiusura A=110Hz (LA più bassa)
     notePattern: [
-      // — Frase A —
-      {l:1,t:1500,f:147},                                                                          // D (lunga)
-      {l:1,t:2800,f:147},{l:2,t:3450,f:175},{l:1,t:4100,f:147},{l:0,t:4750,f:131},{l:0,t:5400,f:117}, // D-F-D-C-Bb(tenuta)
-      // — Frase A (ripetuta) —
-      {l:1,t:6700,f:147},                                                                          // D (lunga)
-      {l:1,t:8000,f:147},{l:2,t:8650,f:175},{l:1,t:9300,f:147},{l:0,t:9950,f:131},{l:0,t:10600,f:117},
-      // — Variazione (parte alta) —
-      {l:1,t:11900,f:147},{l:2,t:12550,f:175},{l:2,t:13200,f:196},{l:2,t:13850,f:175},{l:1,t:14500,f:147}, // D-F-G-F-D
-      // — Chiusura discendente —
-      {l:1,t:15800,f:147},                                                                         // D (lunga)
-      {l:1,t:17100,f:147},{l:2,t:17750,f:175},{l:1,t:18400,f:147},{l:0,t:19050,f:131},{l:0,t:19700,f:117},{l:0,t:20350,f:110}, // ...C-Bb-A(tenuta bassa)
+      // — Giro 1 —
+      {l:1,t:900,f:147},                              // D (lunga apertura)
+      {l:1,t:1700,f:147},{l:2,t:2050,f:175},          // D-F (coppia tight +350ms)
+      {l:1,t:2700,f:147},                              // D
+      {l:0,t:3350,f:131},{l:0,t:3700,f:117},           // C-Bb (coppia tight)
+      {l:0,t:4350,f:110},                              // A (BASSISSIMA, lunghissima)
+      // — Giro 2 —
+      {l:1,t:6200,f:147},
+      {l:1,t:7000,f:147},{l:2,t:7350,f:175},
+      {l:1,t:8000,f:147},
+      {l:0,t:8650,f:131},{l:0,t:9000,f:117},
+      {l:0,t:9650,f:110},                              // A (BASSISSIMA)
+      // — Variazione D-F-G-F-D (ascesa+discesa) —
+      {l:1,t:11500,f:147},{l:2,t:12150,f:175},{l:2,t:12800,f:196},{l:2,t:13450,f:175},{l:1,t:14100,f:147},
+      // — Giro 3 (chiusura) —
+      {l:1,t:16000,f:147},
+      {l:1,t:16800,f:147},{l:2,t:17150,f:175},
+      {l:1,t:17800,f:147},
+      {l:0,t:18450,f:131},{l:0,t:18800,f:117},
+      {l:0,t:19450,f:110},                             // A (BASSISSIMA — la nota mancante!)
     ]
   },
   {
@@ -524,26 +535,27 @@ const LEVELS_DATA = [
     hint: "💡 La struttura corretta prevede:\n• Prefisso \"Lyrics:\" per separare il testo\n• Tag di sezione: [Verse 1], [Chorus], [Bridge]\n• Parentesi tonde per cori/echi: (YF&K!)\n• Istruzioni musicali PRIMA del testo\n• Il modello legge le due parti separatamente!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 3:",
     unlockedPrompt: "Brano synth-rock energetico, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
-    // ♪ "Jump" (Van Halen, 1984) — lento e cadenzato (pulsazione 650ms)
-    // Melodia: Do(lunga) — Sol — Do — (pausa) — Fa — Fa — Sol(lunga)
+    // ♪ "Jump" (Van Halen, 1984) — timing utente ×1.4 per renderlo leggermente più lento
+    // Do(LUNGO 980ms) · Sol-Do(tight 560ms) · pausa · Fa-Fa(tight 560ms) · Sol(tight 420ms, LUNGO)
     // C5=523, G5=784, F5=698 — Lane: 0=Fa, 1=Do, 2=Sol
+    // Giro span: 3500ms + pausa 1600ms = 5100ms tra attacchi
     notePattern: [
-      // — Giro 1 —
-      {l:1,t:650,f:523},                                       // Do (lunga)
-      {l:2,t:1950,f:784},{l:1,t:2600,f:523},                   // Sol-Do
-      {l:0,t:3900,f:698},{l:0,t:4550,f:698},{l:2,t:5200,f:784}, // Fa-Fa-Sol(lunga)
-      // — Giro 2 — (vocal "JUMP!" sul Sol a 7800ms)
-      {l:1,t:6500,f:523},
-      {l:2,t:7800,f:784},{l:1,t:8450,f:523},
-      {l:0,t:9750,f:698},{l:0,t:10400,f:698},{l:2,t:11050,f:784},
-      // — Giro 3 —
-      {l:1,t:12350,f:523},
-      {l:2,t:13650,f:784},{l:1,t:14300,f:523},
-      {l:0,t:15600,f:698},{l:0,t:16250,f:698},{l:2,t:16900,f:784},
-      // — Giro 4 — (vocal "JUMP!" sul Sol a 19500ms)
-      {l:1,t:18200,f:523},
-      {l:2,t:19500,f:784},{l:1,t:20150,f:523},
-      {l:0,t:21450,f:698},{l:0,t:22100,f:698},{l:2,t:22750,f:784},
+      // — Giro 1 (base 500) —
+      {l:1,t:500,f:523},
+      {l:2,t:1480,f:784},{l:1,t:2040,f:523},
+      {l:0,t:3020,f:698},{l:0,t:3580,f:698},{l:2,t:4000,f:784},
+      // — Giro 2 (base 5600) — vocal "JUMP!" sul Sol a 6580ms
+      {l:1,t:5600,f:523},
+      {l:2,t:6580,f:784},{l:1,t:7140,f:523},
+      {l:0,t:8120,f:698},{l:0,t:8680,f:698},{l:2,t:9100,f:784},
+      // — Giro 3 (base 10700) —
+      {l:1,t:10700,f:523},
+      {l:2,t:11680,f:784},{l:1,t:12240,f:523},
+      {l:0,t:13220,f:698},{l:0,t:13780,f:698},{l:2,t:14200,f:784},
+      // — Giro 4 (base 15800) — vocal "JUMP!" sul Sol a 16780ms
+      {l:1,t:15800,f:523},
+      {l:2,t:16780,f:784},{l:1,t:17340,f:523},
+      {l:0,t:18320,f:698},{l:0,t:18880,f:698},{l:2,t:19300,f:784},
     ]
   },
   {
@@ -563,23 +575,32 @@ const LEVELS_DATA = [
     hint: "💡 Il workflow ottimale per i profili vocali:\n• Definisci: estensione, timbro, stile (es. roca, granulosa)\n• Usa lyria-3-clip-preview per test rapidi a 30 secondi\n• Itera sul prompt vocale prima di spendere risorse\n• Solo dopo: passa a lyria-3 per la versione completa!\n• Human in the Loop: tu guidi, l'AI esegue!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 4 (BOSS):",
     unlockedPrompt: "Vocal persona: Weathered Rocker (uomo), voce roca e ruvida, timbro granuloso, vibrato controllato.\nModel: lyria-3-clip-preview\n→ Test rapido 30 sec → Affina prompt vocale\n→ Versione finale: lyria-3 completo",
-    // ♪ "Eye of the Tiger" (Survivor, 1982) — Do minore, lento e cadenzato (pulsazione 650ms)
-    // Ritmo: PAM!(tenuta) — pausa — PAM-pam-PAM ×2 — PAM-pam-G — verso discendente
-    // C4=262, Bb3=233, G3=196 — Lane: 0=Bb (sinistra), 1=C (centro), 2=G (destra, tenuta lunga)
+    // ♪ "Eye of the Tiger" (Survivor, 1982) — Do minore, pattern originale completo 3 round
+    // Ritmo: PAM!(pausa)  PAM-pam-PAM × 3  poi verso discendente C-C-Bb-C-Bb-G
+    // C4=262, Bb3=233, G3=196 — Lane: 0=Bb/G (sinistra), 1=C (centro), 2=G punch (destra, sustain lungo)
     notePattern: [
-      // — Round 1: intro —
-      {l:1,t:1500,f:262},                                    // PAM! (tenuta)
-      {l:1,t:2800,f:262},{l:0,t:3450,f:233},{l:1,t:4100,f:262}, // PAM-pam-PAM
-      {l:1,t:5400,f:262},{l:0,t:6050,f:233},{l:1,t:6700,f:262}, // PAM-pam-PAM
-      {l:1,t:8000,f:262},{l:0,t:8650,f:233},{l:2,t:9300,f:196}, // PAM-pam-G(tenuta)
+      // — Round 1: intro PAM! ... PAM-pam-PAM! ×3 —
+      {l:1,t:500,f:262},
+      {l:1,t:1300,f:262},{l:0,t:1600,f:233},{l:1,t:1900,f:262},
+      {l:1,t:2700,f:262},{l:0,t:3000,f:233},{l:1,t:3300,f:262},
+      {l:1,t:4100,f:262},{l:0,t:4400,f:233},{l:2,t:4700,f:196},
       // — Verso discendente: C-C-Bb-C-Bb-G —
-      {l:1,t:10600,f:262},{l:1,t:11250,f:262},{l:0,t:11900,f:233},{l:1,t:12550,f:262},{l:0,t:13200,f:233},{l:2,t:13850,f:196},
-      // — Round 2: intro —
-      {l:1,t:15150,f:262},                                   // PAM! (tenuta)
-      {l:1,t:16450,f:262},{l:0,t:17100,f:233},{l:1,t:17750,f:262},
-      {l:1,t:19050,f:262},{l:0,t:19700,f:233},{l:2,t:20350,f:196},
-      // — Climax finale: C-Bb-G —
-      {l:1,t:21650,f:262},{l:0,t:22300,f:233},{l:2,t:22950,f:196},
+      {l:1,t:5500,f:262},{l:1,t:5900,f:262},
+      {l:0,t:6300,f:233},{l:1,t:6700,f:262},{l:0,t:7100,f:233},{l:0,t:7500,f:196},
+      // — Round 2 —
+      {l:1,t:8300,f:262},
+      {l:1,t:9100,f:262},{l:0,t:9400,f:233},{l:1,t:9700,f:262},
+      {l:1,t:10500,f:262},{l:0,t:10800,f:233},{l:1,t:11100,f:262},
+      {l:1,t:11900,f:262},{l:0,t:12200,f:233},{l:2,t:12500,f:196},
+      {l:1,t:13300,f:262},{l:1,t:13700,f:262},
+      {l:0,t:14100,f:233},{l:1,t:14500,f:262},{l:0,t:14900,f:233},{l:0,t:15300,f:196},
+      // — Round 3 (climax) —
+      {l:1,t:16100,f:262},
+      {l:1,t:16900,f:262},{l:0,t:17200,f:233},{l:1,t:17500,f:262},
+      {l:1,t:18300,f:262},{l:0,t:18600,f:233},{l:1,t:18900,f:262},
+      {l:1,t:19700,f:262},{l:0,t:20000,f:233},{l:2,t:20300,f:196},
+      {l:1,t:21100,f:262},{l:1,t:21500,f:262},
+      {l:0,t:21900,f:233},{l:1,t:22300,f:262},{l:0,t:22700,f:233},{l:0,t:23100,f:196},
     ]
   }
 ];
@@ -1614,8 +1635,8 @@ function replayTrack() {
 
 function scheduleJumpVocal() {
   if (game.levelIndex !== 2) return;
-  // "JUMP!" shout sul Sol del giro 2 (7.8s) e del giro 4 (19.5s)
-  [7800, 19500].forEach(delay => {
+  // "JUMP!" shout sul Sol del giro 2 (6.58s) e del giro 4 (16.78s)
+  [6580, 16780].forEach(delay => {
     setTimeout(() => {
       if (game.screen === 'PLAYING' && game.levelIndex === 2) playVocalJump();
     }, delay);

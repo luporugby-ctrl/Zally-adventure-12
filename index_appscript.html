@@ -440,19 +440,20 @@ const LEVELS_DATA = [
     hint: "💡 Vague prompts produce generic results. ALWAYS mention:\n• Musical genre\n• BPM (e.g. 120 BPM)\n• Era (e.g. the '80s)\n• Exact instruments\n• How these elements interact with each other.",
     promptLabel: "UNLOCKED PROMPT — LEVEL 1:",
     unlockedPrompt: "\"An '80s synth-pop track with a driving 120 BPM rhythm, bright synthesizers, retro-futuristic atmosphere and a saxophone solo in the bridge.\"",
-    // ♪ "Smoke on the Water" — F# minor, slow & steady (700ms pulse)
-    // Riff: F#-A-B / F#-A-C#-B / F#-A-B / A-F#  (long sustained notes, rests between phrases)
+    // ♪ "Smoke on the Water" — F# minor, character SHORT-SHORT-LONG
+    // Riff 1: F#-A-B(held) / Riff 2: F#-A-C#-B(held) / Riff 3: F#-A-B-A-F#
+    // 8th pairs ≈380ms, gaps between phrases ≈1200ms
     notePattern: [
       // — Round 1 —
-      {l:0,t:1500,f:185},{l:1,t:2200,f:220},{l:2,t:2900,f:247},
-      {l:0,t:4300,f:185},{l:1,t:5000,f:220},{l:2,t:5700,f:277},{l:2,t:6400,f:247},
-      {l:0,t:7800,f:185},{l:1,t:8500,f:220},{l:2,t:9200,f:247},
-      {l:1,t:10600,f:220},{l:0,t:11300,f:185},
+      {l:0,t:1000,f:185},{l:1,t:1380,f:220},{l:2,t:1760,f:247},
+      {l:0,t:2900,f:185},{l:1,t:3280,f:220},{l:2,t:3660,f:277},{l:2,t:4040,f:247},
+      {l:0,t:5400,f:185},{l:1,t:5780,f:220},{l:2,t:6160,f:247},{l:1,t:6920,f:220},{l:0,t:7680,f:185},
       // — Round 2 —
-      {l:0,t:12700,f:185},{l:1,t:13400,f:220},{l:2,t:14100,f:247},
-      {l:0,t:15500,f:185},{l:1,t:16200,f:220},{l:2,t:16900,f:277},{l:2,t:17600,f:247},
-      {l:0,t:19000,f:185},{l:1,t:19700,f:220},{l:2,t:20400,f:247},
-      {l:1,t:21800,f:220},{l:0,t:22500,f:185},
+      {l:0,t:9100,f:185},{l:1,t:9480,f:220},{l:2,t:9860,f:247},
+      {l:0,t:11000,f:185},{l:1,t:11380,f:220},{l:2,t:11760,f:277},{l:2,t:12140,f:247},
+      {l:0,t:13500,f:185},{l:1,t:13880,f:220},{l:2,t:14260,f:247},{l:1,t:15020,f:220},{l:0,t:15780,f:185},
+      // — Coda —
+      {l:0,t:17200,f:185},{l:1,t:17580,f:220},{l:2,t:17960,f:277},{l:2,t:18340,f:247},
     ]
   },
   {
@@ -472,20 +473,29 @@ const LEVELS_DATA = [
     hint: "💡 Lyria 3.5 understands timelines in seconds!\nUse:\n• Structure tags: [Intro], [Verse 1], [Pre-Chorus], [Chorus]\n• Progression arrows: [A] -> [B] -> [C]\n• Explicit timing: \"Drop at 32 seconds\"\n• Energy descriptors: \"explosive crescendo\"",
     promptLabel: "UNLOCKED PROMPT — LEVEL 2:",
     unlockedPrompt: "[Intro] -> Tense atmosphere, 8 seconds -> [Verse 1] -> Building energy -> [Pre-Chorus] -> Drop at 32 seconds -> [Chorus] -> Rhythmic explosion with synth lead.",
-    // ♪ "Seven Nation Army" — key of D, slow & steady (650ms pulse)
-    // Riff: D(long)-D-F-D-C-Bb / variation D-F-G-F-D / descending close down to A
+    // ♪ "Seven Nation Army" — key of D, D(LONG)·D-F(tight)·D·C-Bb(tight)·A(lowest, very long)
+    // The riff: D long — tight D-F pair — D — tight C-Bb pair — A very low (the key ending note)
     notePattern: [
-      // — Phrase A —
-      {l:1,t:1500,f:147},
-      {l:1,t:2800,f:147},{l:2,t:3450,f:175},{l:1,t:4100,f:147},{l:0,t:4750,f:131},{l:0,t:5400,f:117},
-      // — Phrase A (repeat) —
-      {l:1,t:6700,f:147},
-      {l:1,t:8000,f:147},{l:2,t:8650,f:175},{l:1,t:9300,f:147},{l:0,t:9950,f:131},{l:0,t:10600,f:117},
-      // — Variation (high part) —
-      {l:1,t:11900,f:147},{l:2,t:12550,f:175},{l:2,t:13200,f:196},{l:2,t:13850,f:175},{l:1,t:14500,f:147},
-      // — Descending close —
-      {l:1,t:15800,f:147},
-      {l:1,t:17100,f:147},{l:2,t:17750,f:175},{l:1,t:18400,f:147},{l:0,t:19050,f:131},{l:0,t:19700,f:117},{l:0,t:20350,f:110},
+      // — Round 1 —
+      {l:1,t:900,f:147},
+      {l:1,t:1700,f:147},{l:2,t:2050,f:175},
+      {l:1,t:2700,f:147},
+      {l:0,t:3350,f:131},{l:0,t:3700,f:117},
+      {l:0,t:4350,f:110},                              // A (lowest note!)
+      // — Round 2 —
+      {l:1,t:6200,f:147},
+      {l:1,t:7000,f:147},{l:2,t:7350,f:175},
+      {l:1,t:8000,f:147},
+      {l:0,t:8650,f:131},{l:0,t:9000,f:117},
+      {l:0,t:9650,f:110},                              // A (lowest note!)
+      // — Variation D-F-G-F-D —
+      {l:1,t:11500,f:147},{l:2,t:12150,f:175},{l:2,t:12800,f:196},{l:2,t:13450,f:175},{l:1,t:14100,f:147},
+      // — Round 3 (close) —
+      {l:1,t:16000,f:147},
+      {l:1,t:16800,f:147},{l:2,t:17150,f:175},
+      {l:1,t:17800,f:147},
+      {l:0,t:18450,f:131},{l:0,t:18800,f:117},
+      {l:0,t:19450,f:110},                             // A (lowest note — the missing one!)
     ]
   },
   {
@@ -505,26 +515,25 @@ const LEVELS_DATA = [
     hint: "💡 The correct structure requires:\n• \"Lyrics:\" prefix to separate the text\n• Section tags: [Verse 1], [Chorus], [Bridge]\n• Round brackets for backing vocals/echoes: (YF&K!)\n• Musical instructions BEFORE the lyrics\n• The model reads the two parts separately!",
     promptLabel: "UNLOCKED PROMPT — LEVEL 3:",
     unlockedPrompt: "Energetic synth-rock track, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
-    // ♪ "Jump" (Van Halen, 1984) — slow & steady (650ms pulse)
-    // Melody: Do(long) — Sol — Do — (rest) — Fa — Fa — Sol(long)
+    // ♪ "Jump" (Van Halen, 1984) — user timing ×1.4, Do(LONG 980ms)·Sol-Do(tight)·Fa-Fa-Sol
     // C5=523, G5=784, F5=698 — Lane: 0=Fa, 1=Do, 2=Sol
     notePattern: [
-      // — Round 1 —
-      {l:1,t:650,f:523},
-      {l:2,t:1950,f:784},{l:1,t:2600,f:523},
-      {l:0,t:3900,f:698},{l:0,t:4550,f:698},{l:2,t:5200,f:784},
-      // — Round 2 — (vocal "JUMP!" on the Sol at 7800ms)
-      {l:1,t:6500,f:523},
-      {l:2,t:7800,f:784},{l:1,t:8450,f:523},
-      {l:0,t:9750,f:698},{l:0,t:10400,f:698},{l:2,t:11050,f:784},
-      // — Round 3 —
-      {l:1,t:12350,f:523},
-      {l:2,t:13650,f:784},{l:1,t:14300,f:523},
-      {l:0,t:15600,f:698},{l:0,t:16250,f:698},{l:2,t:16900,f:784},
-      // — Round 4 — (vocal "JUMP!" on the Sol at 19500ms)
-      {l:1,t:18200,f:523},
-      {l:2,t:19500,f:784},{l:1,t:20150,f:523},
-      {l:0,t:21450,f:698},{l:0,t:22100,f:698},{l:2,t:22750,f:784},
+      // — Round 1 (base 500) —
+      {l:1,t:500,f:523},
+      {l:2,t:1480,f:784},{l:1,t:2040,f:523},
+      {l:0,t:3020,f:698},{l:0,t:3580,f:698},{l:2,t:4000,f:784},
+      // — Round 2 (base 5600) — vocal "JUMP!" on Sol at 6580ms
+      {l:1,t:5600,f:523},
+      {l:2,t:6580,f:784},{l:1,t:7140,f:523},
+      {l:0,t:8120,f:698},{l:0,t:8680,f:698},{l:2,t:9100,f:784},
+      // — Round 3 (base 10700) —
+      {l:1,t:10700,f:523},
+      {l:2,t:11680,f:784},{l:1,t:12240,f:523},
+      {l:0,t:13220,f:698},{l:0,t:13780,f:698},{l:2,t:14200,f:784},
+      // — Round 4 (base 15800) — vocal "JUMP!" on Sol at 16780ms
+      {l:1,t:15800,f:523},
+      {l:2,t:16780,f:784},{l:1,t:17340,f:523},
+      {l:0,t:18320,f:698},{l:0,t:18880,f:698},{l:2,t:19300,f:784},
     ]
   },
   {
@@ -544,23 +553,32 @@ const LEVELS_DATA = [
     hint: "💡 Optimal workflow for vocal profiles:\n• Define: range, timbre, style (e.g. rough, grainy)\n• Use lyria-3-clip-preview for quick 30-second tests\n• Iterate on the vocal prompt before spending resources\n• Only then: move to lyria-3 for the full version!\n• Human in the Loop: you guide, the AI executes!",
     promptLabel: "UNLOCKED PROMPT — LEVEL 4 (BOSS):",
     unlockedPrompt: "Vocal persona: Weathered Rocker (male), rough and raspy voice, grainy timbre, controlled vibrato.\nModel: lyria-3-clip-preview\n→ Quick 30-sec test → Refine vocal prompt\n→ Final version: full lyria-3",
-    // ♪ "Eye of the Tiger" (Survivor, 1982) — C minor, slow & steady (650ms pulse)
-    // Rhythm: PAM!(held) — rest — PAM-pam-PAM ×2 — PAM-pam-G — descending verse
-    // C4=262, Bb3=233, G3=196 — Lane: 0=Bb (left), 1=C (center), 2=G (right, long sustain)
+    // ♪ "Eye of the Tiger" (Survivor, 1982) — C minor, full 3-round original pattern
+    // Rhythm: PAM!(pause) PAM-pam-PAM ×3 then descending verse C-C-Bb-C-Bb-G
+    // C4=262, Bb3=233, G3=196 — Lane: 0=Bb/G (left), 1=C (center), 2=G punch (right, long sustain)
     notePattern: [
-      // — Round 1: intro —
-      {l:1,t:1500,f:262},
-      {l:1,t:2800,f:262},{l:0,t:3450,f:233},{l:1,t:4100,f:262},
-      {l:1,t:5400,f:262},{l:0,t:6050,f:233},{l:1,t:6700,f:262},
-      {l:1,t:8000,f:262},{l:0,t:8650,f:233},{l:2,t:9300,f:196},
+      // — Round 1: intro PAM! ... PAM-pam-PAM! ×3 —
+      {l:1,t:500,f:262},
+      {l:1,t:1300,f:262},{l:0,t:1600,f:233},{l:1,t:1900,f:262},
+      {l:1,t:2700,f:262},{l:0,t:3000,f:233},{l:1,t:3300,f:262},
+      {l:1,t:4100,f:262},{l:0,t:4400,f:233},{l:2,t:4700,f:196},
       // — Descending verse: C-C-Bb-C-Bb-G —
-      {l:1,t:10600,f:262},{l:1,t:11250,f:262},{l:0,t:11900,f:233},{l:1,t:12550,f:262},{l:0,t:13200,f:233},{l:2,t:13850,f:196},
-      // — Round 2: intro —
-      {l:1,t:15150,f:262},
-      {l:1,t:16450,f:262},{l:0,t:17100,f:233},{l:1,t:17750,f:262},
-      {l:1,t:19050,f:262},{l:0,t:19700,f:233},{l:2,t:20350,f:196},
-      // — Final climax: C-Bb-G —
-      {l:1,t:21650,f:262},{l:0,t:22300,f:233},{l:2,t:22950,f:196},
+      {l:1,t:5500,f:262},{l:1,t:5900,f:262},
+      {l:0,t:6300,f:233},{l:1,t:6700,f:262},{l:0,t:7100,f:233},{l:0,t:7500,f:196},
+      // — Round 2 —
+      {l:1,t:8300,f:262},
+      {l:1,t:9100,f:262},{l:0,t:9400,f:233},{l:1,t:9700,f:262},
+      {l:1,t:10500,f:262},{l:0,t:10800,f:233},{l:1,t:11100,f:262},
+      {l:1,t:11900,f:262},{l:0,t:12200,f:233},{l:2,t:12500,f:196},
+      {l:1,t:13300,f:262},{l:1,t:13700,f:262},
+      {l:0,t:14100,f:233},{l:1,t:14500,f:262},{l:0,t:14900,f:233},{l:0,t:15300,f:196},
+      // — Round 3 (climax) —
+      {l:1,t:16100,f:262},
+      {l:1,t:16900,f:262},{l:0,t:17200,f:233},{l:1,t:17500,f:262},
+      {l:1,t:18300,f:262},{l:0,t:18600,f:233},{l:1,t:18900,f:262},
+      {l:1,t:19700,f:262},{l:0,t:20000,f:233},{l:2,t:20300,f:196},
+      {l:1,t:21100,f:262},{l:1,t:21500,f:262},
+      {l:0,t:21900,f:233},{l:1,t:22300,f:262},{l:0,t:22700,f:233},{l:0,t:23100,f:196},
     ]
   }
 ];
@@ -780,8 +798,8 @@ function playVocalJump() {
 
 function scheduleJumpVocal() {
   if (game.levelIndex !== 2) return;
-  // "JUMP!" shout on the Sol of round 2 (7.8s) and round 4 (19.5s)
-  [7800, 19500].forEach(delay => {
+  // "JUMP!" shout on Sol of round 2 (6.58s) and round 4 (16.78s)
+  [6580, 16780].forEach(delay => {
     setTimeout(() => {
       if (game.screen === 'PLAYING' && game.levelIndex === 2) playVocalJump();
     }, delay);
