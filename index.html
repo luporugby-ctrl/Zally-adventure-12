@@ -519,31 +519,31 @@ const LEVELS_DATA = [
     hint: "💡 La struttura corretta prevede:\n• Prefisso \"Lyrics:\" per separare il testo\n• Tag di sezione: [Verse 1], [Chorus], [Bridge]\n• Parentesi tonde per cori/echi: (YF&K!)\n• Istruzioni musicali PRIMA del testo\n• Il modello legge le due parti separatamente!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 3:",
     unlockedPrompt: "Brano synth-rock energetico, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
-    // ♪ "Jump" (Van Halen, 1984) — INTRO VERA: progressione G-C-G-F-C-Bb-C + fill G-E-C
-    // G3=196, C4=262, F3=175, Bb3=233, E3=165, C3=131
-    // Lane: 0=F3/E3/C3 (bassi), 1=G3 (medio), 2=Bb3/C4 (alti)
+    // ♪ "Jump" (Van Halen, 1984) — melodia synth: Do-Sol-Do / Fa-Fa-Sol
+    // Do(lungo) — Sol-Do(pausa) — Fa-Fa-Sol(lungo, sospeso)
+    // C4=262, G4=392, F4=349
+    // Lane: 0=Fa(349), 1=Do(262), 2=Sol(392)
     notePattern: [
-      // — Giro 1: G-G / C-C / G-G / F-C / Bb-C / fill G-E-C —
-      {l:1,t:500,f:196},{l:1,t:1000,f:196},
-      {l:2,t:1600,f:262},{l:2,t:2100,f:262},
-      {l:1,t:2700,f:196},{l:1,t:3200,f:196},
-      {l:0,t:3800,f:175},{l:2,t:4300,f:262},
-      {l:2,t:4800,f:233},{l:2,t:5300,f:262},
-      {l:1,t:5900,f:196},{l:0,t:6400,f:165},{l:0,t:6900,f:131},
+      // — Giro 1: TAAAA - ta-TAAA - ta-ta-TAAAA —
+      {l:1,t:500,f:262},
+      {l:2,t:1550,f:392},{l:1,t:1850,f:262},
+      {l:0,t:2900,f:349},{l:0,t:3200,f:349},{l:2,t:3500,f:392},
       // — Giro 2 —
-      {l:1,t:7600,f:196},{l:1,t:8100,f:196},
-      {l:2,t:8700,f:262},{l:2,t:9200,f:262},
-      {l:1,t:9800,f:196},{l:1,t:10300,f:196},
-      {l:0,t:10900,f:175},{l:2,t:11400,f:262},
-      {l:2,t:11900,f:233},{l:2,t:12400,f:262},
-      {l:1,t:13000,f:196},{l:0,t:13500,f:165},{l:0,t:14000,f:131},
+      {l:1,t:4600,f:262},
+      {l:2,t:5650,f:392},{l:1,t:5950,f:262},
+      {l:0,t:7000,f:349},{l:0,t:7300,f:349},{l:2,t:7600,f:392},
       // — Giro 3 —
-      {l:1,t:14700,f:196},{l:1,t:15200,f:196},
-      {l:2,t:15800,f:262},{l:2,t:16300,f:262},
-      {l:1,t:16900,f:196},{l:1,t:17400,f:196},
-      {l:0,t:18000,f:175},{l:2,t:18500,f:262},
-      {l:2,t:19000,f:233},{l:2,t:19500,f:262},
-      {l:1,t:20100,f:196},{l:0,t:20600,f:165},{l:0,t:21100,f:131},
+      {l:1,t:8700,f:262},
+      {l:2,t:9750,f:392},{l:1,t:10050,f:262},
+      {l:0,t:11100,f:349},{l:0,t:11400,f:349},{l:2,t:11700,f:392},
+      // — Giro 4 —
+      {l:1,t:12800,f:262},
+      {l:2,t:13850,f:392},{l:1,t:14150,f:262},
+      {l:0,t:15200,f:349},{l:0,t:15500,f:349},{l:2,t:15800,f:392},
+      // — Giro 5 —
+      {l:1,t:16900,f:262},
+      {l:2,t:17950,f:392},{l:1,t:18250,f:262},
+      {l:0,t:19300,f:349},{l:0,t:19600,f:349},{l:2,t:19900,f:392},
     ]
   },
   {
