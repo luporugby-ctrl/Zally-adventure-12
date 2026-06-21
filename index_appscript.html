@@ -496,28 +496,28 @@ const LEVELS_DATA = [
     unlockedPrompt: "Energetic synth-rock track, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
     // ♪ "Jump" (Van Halen, 1984) — exact user timing
     // t=0:Do  t=700:Sol  t=1100:Do  t=1800:Fa  t=2200:Fa  t=2500:Sol(long)
-    // C4=262, G4=392, F4=349 — Lane: 0=Fa, 1=Do, 2=Sol
+    // C5=523, G5=784, F5=698 — Lane: 0=Fa, 1=Do, 2=Sol (octave up)
     notePattern: [
       // — Round 1 (base 500ms) —
-      {l:1,t:500,f:262},
-      {l:2,t:1200,f:392},{l:1,t:1600,f:262},
-      {l:0,t:2300,f:349},{l:0,t:2700,f:349},{l:2,t:3000,f:392},
+      {l:1,t:500,f:523},
+      {l:2,t:1200,f:784},{l:1,t:1600,f:523},
+      {l:0,t:2300,f:698},{l:0,t:2700,f:698},{l:2,t:3000,f:784},
       // — Round 2 (base 4200ms) —
-      {l:1,t:4200,f:262},
-      {l:2,t:4900,f:392},{l:1,t:5300,f:262},
-      {l:0,t:6000,f:349},{l:0,t:6400,f:349},{l:2,t:6700,f:392},
-      // — Round 3 (base 7900ms) —
-      {l:1,t:7900,f:262},
-      {l:2,t:8600,f:392},{l:1,t:9000,f:262},
-      {l:0,t:9700,f:349},{l:0,t:10100,f:349},{l:2,t:10400,f:392},
+      {l:1,t:4200,f:523},
+      {l:2,t:4900,f:784},{l:1,t:5300,f:523},
+      {l:0,t:6000,f:698},{l:0,t:6400,f:698},{l:2,t:6700,f:784},
+      // — Round 3 (base 7900ms) — vocal "JUMP!" at ~10.2s
+      {l:1,t:7900,f:523},
+      {l:2,t:8600,f:784},{l:1,t:9000,f:523},
+      {l:0,t:9700,f:698},{l:0,t:10100,f:698},{l:2,t:10400,f:784},
       // — Round 4 (base 11600ms) —
-      {l:1,t:11600,f:262},
-      {l:2,t:12300,f:392},{l:1,t:12700,f:262},
-      {l:0,t:13400,f:349},{l:0,t:13800,f:349},{l:2,t:14100,f:392},
+      {l:1,t:11600,f:523},
+      {l:2,t:12300,f:784},{l:1,t:12700,f:523},
+      {l:0,t:13400,f:698},{l:0,t:13800,f:698},{l:2,t:14100,f:784},
       // — Round 5 (base 15300ms) —
-      {l:1,t:15300,f:262},
-      {l:2,t:16000,f:392},{l:1,t:16400,f:262},
-      {l:0,t:17100,f:349},{l:0,t:17500,f:349},{l:2,t:17800,f:392},
+      {l:1,t:15300,f:523},
+      {l:2,t:16000,f:784},{l:1,t:16400,f:523},
+      {l:0,t:17100,f:698},{l:0,t:17500,f:698},{l:2,t:17800,f:784},
     ]
   },
   {
@@ -714,8 +714,8 @@ function playOBXa(freq, sustain = 0.45, vol = 0.70) {
 
     const filter = ac.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.value = 2400;
-    filter.Q.value = 0.7;
+    filter.frequency.value = 5000;
+    filter.Q.value = 0.6;
     filter.connect(masterGain);
 
     [
@@ -755,6 +755,40 @@ function playOBXa(freq, sustain = 0.45, vol = 0.70) {
     sub.stop(t + sustain + 0.22);
 
   } catch(e) {}
+}
+
+// ── David Lee Roth "JUMP!" vocal shout approximation ──
+function playVocalJump() {
+  try {
+    const ac = getAC(); const t = ac.currentTime;
+    const osc = ac.createOscillator(); osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(260, t);
+    osc.frequency.exponentialRampToValueAtTime(480, t + 0.22);
+    osc.frequency.exponentialRampToValueAtTime(430, t + 0.55);
+    const f1 = ac.createBiquadFilter(); f1.type='bandpass'; f1.frequency.value=900; f1.Q.value=4;
+    const f2 = ac.createBiquadFilter(); f2.type='bandpass'; f2.frequency.value=1600; f2.Q.value=3;
+    const gF1 = ac.createGain(); gF1.gain.value=0.7;
+    const gF2 = ac.createGain(); gF2.gain.value=0.45;
+    const env = ac.createGain();
+    env.gain.setValueAtTime(0, t);
+    env.gain.linearRampToValueAtTime(0.55, t + 0.04);
+    env.gain.setValueAtTime(0.55, t + 0.30);
+    env.gain.exponentialRampToValueAtTime(0.001, t + 0.70);
+    osc.connect(f1); osc.connect(f2);
+    f1.connect(gF1); f2.connect(gF2);
+    gF1.connect(env); gF2.connect(env);
+    env.connect(ac.destination);
+    osc.start(t); osc.stop(t + 0.80);
+  } catch(e) {}
+}
+
+function scheduleJumpVocal() {
+  if (game.levelIndex !== 2) return;
+  [10200, 17800].forEach(delay => {
+    setTimeout(() => {
+      if (game.screen === 'PLAYING' && game.levelIndex === 2) playVocalJump();
+    }, delay);
+  });
 }
 
 let beatInterval = null;
@@ -1441,6 +1475,7 @@ function startGameplay() {
   prepareNotes(LEVELS_DATA[game.levelIndex]);
   updateHUD();
   startBeat();
+  scheduleJumpVocal();
 }
 
 function replayTrack() {
@@ -1459,6 +1494,7 @@ function replayTrack() {
   replayBtn.classList.remove('active');
   updateHUD();
   startBeat();
+  scheduleJumpVocal();
 }
 
 function restartLevel() {
