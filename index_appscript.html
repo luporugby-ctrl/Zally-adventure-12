@@ -515,25 +515,26 @@ const LEVELS_DATA = [
     hint: "💡 The correct structure requires:\n• \"Lyrics:\" prefix to separate the text\n• Section tags: [Verse 1], [Chorus], [Bridge]\n• Round brackets for backing vocals/echoes: (YF&K!)\n• Musical instructions BEFORE the lyrics\n• The model reads the two parts separately!",
     promptLabel: "UNLOCKED PROMPT — LEVEL 3:",
     unlockedPrompt: "Energetic synth-rock track, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
-    // ♪ "Jump" (Van Halen, 1984) — user timing ×1.4, Do(LONG 980ms)·Sol-Do(tight)·Fa-Fa-Sol
-    // C5=523, G5=784, F5=698 — Lane: 0=Fa, 1=Do, 2=Sol
+    // ♪ "Jump" (Van Halen, 1984) — user timing ×1.4, correct contour (Do = HIGHEST note)
+    // Do(LONG 980ms)·Sol-Do(tight)·Fa-Fa-Sol(LONG)
+    // Do=C5=523 (peak), Sol=G4=392, Fa=F4=349 — Lane: 0=Fa, 1=Do, 2=Sol — chords C-G-F
     notePattern: [
       // — Round 1 (base 500) —
       {l:1,t:500,f:523},
-      {l:2,t:1480,f:784},{l:1,t:2040,f:523},
-      {l:0,t:3020,f:698},{l:0,t:3580,f:698},{l:2,t:4000,f:784},
+      {l:2,t:1480,f:392},{l:1,t:2040,f:523},
+      {l:0,t:3020,f:349},{l:0,t:3580,f:349},{l:2,t:4000,f:392},
       // — Round 2 (base 5600) — vocal "JUMP!" on Sol at 6580ms
       {l:1,t:5600,f:523},
-      {l:2,t:6580,f:784},{l:1,t:7140,f:523},
-      {l:0,t:8120,f:698},{l:0,t:8680,f:698},{l:2,t:9100,f:784},
+      {l:2,t:6580,f:392},{l:1,t:7140,f:523},
+      {l:0,t:8120,f:349},{l:0,t:8680,f:349},{l:2,t:9100,f:392},
       // — Round 3 (base 10700) —
       {l:1,t:10700,f:523},
-      {l:2,t:11680,f:784},{l:1,t:12240,f:523},
-      {l:0,t:13220,f:698},{l:0,t:13780,f:698},{l:2,t:14200,f:784},
+      {l:2,t:11680,f:392},{l:1,t:12240,f:523},
+      {l:0,t:13220,f:349},{l:0,t:13780,f:349},{l:2,t:14200,f:392},
       // — Round 4 (base 15800) — vocal "JUMP!" on Sol at 16780ms
       {l:1,t:15800,f:523},
-      {l:2,t:16780,f:784},{l:1,t:17340,f:523},
-      {l:0,t:18320,f:698},{l:0,t:18880,f:698},{l:2,t:19300,f:784},
+      {l:2,t:16780,f:392},{l:1,t:17340,f:523},
+      {l:0,t:18320,f:349},{l:0,t:18880,f:349},{l:2,t:19300,f:392},
     ]
   },
   {
@@ -554,31 +555,32 @@ const LEVELS_DATA = [
     promptLabel: "UNLOCKED PROMPT — LEVEL 4 (BOSS):",
     unlockedPrompt: "Vocal persona: Weathered Rocker (male), rough and raspy voice, grainy timbre, controlled vibrato.\nModel: lyria-3-clip-preview\n→ Quick 30-sec test → Refine vocal prompt\n→ Final version: full lyria-3",
     // ♪ "Eye of the Tiger" (Survivor, 1982) — C minor, full 3-round original pattern
-    // Rhythm: PAM!(pause) PAM-pam-PAM ×3 then descending verse C-C-Bb-C-Bb-G
-    // C4=262, Bb3=233, G3=196 — Lane: 0=Bb/G (left), 1=C (center), 2=G punch (right, long sustain)
+    // Rhythm: PAM!(pause) PAM-pam-PAM ×3 then descending verse C-C-Bb-C-Bb-Ab
+    // C4=262, Bb3=233, Ab3=208 — natural descent C-Bb-Ab (the b6, dramatic VI chord)
+    // Lane: 0=Bb/Ab (left), 1=C (center), 2=Ab punch (right, long sustain)
     notePattern: [
       // — Round 1: intro PAM! ... PAM-pam-PAM! ×3 —
       {l:1,t:500,f:262},
       {l:1,t:1300,f:262},{l:0,t:1600,f:233},{l:1,t:1900,f:262},
       {l:1,t:2700,f:262},{l:0,t:3000,f:233},{l:1,t:3300,f:262},
-      {l:1,t:4100,f:262},{l:0,t:4400,f:233},{l:2,t:4700,f:196},
-      // — Descending verse: C-C-Bb-C-Bb-G —
+      {l:1,t:4100,f:262},{l:0,t:4400,f:233},{l:2,t:4700,f:208},
+      // — Descending verse: C-C-Bb-C-Bb-Ab —
       {l:1,t:5500,f:262},{l:1,t:5900,f:262},
-      {l:0,t:6300,f:233},{l:1,t:6700,f:262},{l:0,t:7100,f:233},{l:0,t:7500,f:196},
+      {l:0,t:6300,f:233},{l:1,t:6700,f:262},{l:0,t:7100,f:233},{l:0,t:7500,f:208},
       // — Round 2 —
       {l:1,t:8300,f:262},
       {l:1,t:9100,f:262},{l:0,t:9400,f:233},{l:1,t:9700,f:262},
       {l:1,t:10500,f:262},{l:0,t:10800,f:233},{l:1,t:11100,f:262},
-      {l:1,t:11900,f:262},{l:0,t:12200,f:233},{l:2,t:12500,f:196},
+      {l:1,t:11900,f:262},{l:0,t:12200,f:233},{l:2,t:12500,f:208},
       {l:1,t:13300,f:262},{l:1,t:13700,f:262},
-      {l:0,t:14100,f:233},{l:1,t:14500,f:262},{l:0,t:14900,f:233},{l:0,t:15300,f:196},
+      {l:0,t:14100,f:233},{l:1,t:14500,f:262},{l:0,t:14900,f:233},{l:0,t:15300,f:208},
       // — Round 3 (climax) —
       {l:1,t:16100,f:262},
       {l:1,t:16900,f:262},{l:0,t:17200,f:233},{l:1,t:17500,f:262},
       {l:1,t:18300,f:262},{l:0,t:18600,f:233},{l:1,t:18900,f:262},
-      {l:1,t:19700,f:262},{l:0,t:20000,f:233},{l:2,t:20300,f:196},
+      {l:1,t:19700,f:262},{l:0,t:20000,f:233},{l:2,t:20300,f:208},
       {l:1,t:21100,f:262},{l:1,t:21500,f:262},
-      {l:0,t:21900,f:233},{l:1,t:22300,f:262},{l:0,t:22700,f:233},{l:0,t:23100,f:196},
+      {l:0,t:21900,f:233},{l:1,t:22300,f:262},{l:0,t:22700,f:233},{l:0,t:23100,f:208},
     ]
   }
 ];
