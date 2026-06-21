@@ -241,9 +241,9 @@
       position: absolute;
       inset: 0;
       display: none;
-      align-items: flex-end;
+      align-items: flex-start;
       justify-content: center;
-      padding-bottom: 30px;
+      padding-top: 15px;
       z-index: 60;
       pointer-events: none;
     }
@@ -269,7 +269,7 @@
     /* ─── REPLAY BUTTON ─── */
     #replayBtn {
       position: absolute;
-      bottom: 60px;
+      top: 15px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0,0,0,0.75);
@@ -563,34 +563,34 @@ const LEVELS_DATA = [
     hint: "💡 Il workflow ottimale per i profili vocali:\n• Definisci: estensione, timbro, stile (es. roca, granulosa)\n• Usa lyria-3-clip-preview per test rapidi a 30 secondi\n• Itera sul prompt vocale prima di spendere risorse\n• Solo dopo: passa a lyria-3 per la versione completa!\n• Human in the Loop: tu guidi, l'AI esegue!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 4 (BOSS):",
     unlockedPrompt: "Vocal persona: Weathered Rocker (uomo), voce roca e ruvida, timbro granuloso, vibrato controllato.\nModel: lyria-3-clip-preview\n→ Test rapido 30 sec → Affina prompt vocale\n→ Versione finale: lyria-3 completo",
-    // ♪ "Eye of the Tiger" (Survivor, 1982) — riff fedele con Ab (minore)
-    // Punches: G-G-G / Eb-Bb  poi riff COMPLETO: C-C-Eb-C-Bb-Ab-G
-    // G3=196, Ab3=208, Bb3=233, C4=262, Eb4=311
-    // Lane: 0=G3 (basso), 1=Ab3/Bb3 (medio), 2=C4/Eb4 (alto)
+    // ♪ "Eye of the Tiger" (Survivor, 1982) — Do minore, intro reale
+    // Tab A|--3---3-1-3---3-1-3---3-1-6--| → C-C-Bb-C-C-Bb-C-C-Bb-Eb
+    // Ritmo: PAM! (pausa) PAM-pam-PAM! (pausa) PAM-pam-PAM! (pausa) PAM-pam-Eb!
+    // Verso: C-C-Bb-C-Bb-G (discendente)
+    // Lane: 0=Bb3/G3 (sinistra), 1=C4 (centro), 2=Eb4 (destra)
     notePattern: [
-      // — Punches iconici: G-G-G / Eb-Bb —
-      {l:0,t:800,f:196},{l:0,t:1300,f:196},{l:0,t:1800,f:196},
-      {l:2,t:2400,f:311},{l:1,t:2900,f:233},
-      // — Punches ×2 —
-      {l:0,t:3600,f:196},{l:0,t:4100,f:196},{l:0,t:4600,f:196},
-      {l:2,t:5200,f:311},{l:1,t:5700,f:233},
-      // — Riff COMPLETO: C-C-Eb-C-Bb-Ab-G (include il Ab!) —
-      {l:2,t:6400,f:262},{l:2,t:6900,f:262},
-      {l:2,t:7400,f:311},{l:2,t:7900,f:262},
-      {l:1,t:8400,f:233},{l:1,t:8900,f:208},{l:0,t:9400,f:196},
-      // — Round 2: punches + riff —
-      {l:0,t:10200,f:196},{l:0,t:10700,f:196},{l:0,t:11200,f:196},
-      {l:2,t:11800,f:311},{l:1,t:12300,f:233},
-      {l:2,t:13000,f:262},{l:2,t:13500,f:262},
-      {l:2,t:14000,f:311},{l:2,t:14500,f:262},
-      {l:1,t:15000,f:233},{l:1,t:15500,f:208},{l:0,t:16000,f:196},
-      // — Round 3 (climax): punches doppi + riff esteso —
-      {l:0,t:16800,f:196},{l:0,t:17200,f:196},{l:0,t:17600,f:196},
-      {l:2,t:18100,f:311},{l:1,t:18600,f:233},
-      {l:0,t:19200,f:196},{l:0,t:19600,f:196},{l:0,t:20000,f:196},
-      {l:2,t:20500,f:311},{l:1,t:21000,f:233},
-      {l:2,t:21600,f:262},{l:2,t:22100,f:311},
-      {l:1,t:22600,f:233},{l:1,t:23100,f:208},{l:0,t:23600,f:196},
+      // — Round 1: intro PAM! ... PAM-pam-PAM! ×3 —
+      {l:1,t:500,f:262},
+      {l:1,t:1300,f:262},{l:0,t:1600,f:233},{l:1,t:1900,f:262},
+      {l:1,t:2700,f:262},{l:0,t:3000,f:233},{l:1,t:3300,f:262},
+      {l:1,t:4100,f:262},{l:0,t:4400,f:233},{l:2,t:4700,f:311},
+      // — Verso discendente: C-C-Bb-C-Bb-G —
+      {l:1,t:5500,f:262},{l:1,t:5900,f:262},
+      {l:0,t:6300,f:233},{l:1,t:6700,f:262},{l:0,t:7100,f:233},{l:0,t:7500,f:196},
+      // — Round 2 —
+      {l:1,t:8300,f:262},
+      {l:1,t:9100,f:262},{l:0,t:9400,f:233},{l:1,t:9700,f:262},
+      {l:1,t:10500,f:262},{l:0,t:10800,f:233},{l:1,t:11100,f:262},
+      {l:1,t:11900,f:262},{l:0,t:12200,f:233},{l:2,t:12500,f:311},
+      {l:1,t:13300,f:262},{l:1,t:13700,f:262},
+      {l:0,t:14100,f:233},{l:1,t:14500,f:262},{l:0,t:14900,f:233},{l:0,t:15300,f:196},
+      // — Round 3 (climax) —
+      {l:1,t:16100,f:262},
+      {l:1,t:16900,f:262},{l:0,t:17200,f:233},{l:1,t:17500,f:262},
+      {l:1,t:18300,f:262},{l:0,t:18600,f:233},{l:1,t:18900,f:262},
+      {l:1,t:19700,f:262},{l:0,t:20000,f:233},{l:2,t:20300,f:311},
+      {l:1,t:21100,f:262},{l:1,t:21500,f:262},
+      {l:0,t:21900,f:233},{l:1,t:22300,f:262},{l:0,t:22700,f:233},{l:0,t:23100,f:196},
     ]
   }
 ];
@@ -636,7 +636,7 @@ function makeDistortionCurve(amount) {
 
 // Clean bell/pluck tone — sine fundamental + harmonic overtones, no distortion
 // Pitch is crystal clear, melodies are immediately recognizable
-function playGuitar(freq, sustain = 0.55, vol = 0.52) {
+function playGuitar(freq, sustain = 0.55, vol = 0.75) {
   try {
     const ac = getAC();
     const t = ac.currentTime;
@@ -689,7 +689,7 @@ function playGuitar(freq, sustain = 0.55, vol = 0.52) {
 const LANE_FREQS = [110, 147, 196]; // A2, D3, G3
 
 function playHit(freq, perfect) {
-  playGuitar(freq, perfect ? 0.42 : 0.28, perfect ? 0.6 : 0.5);
+  playGuitar(freq, perfect ? 0.42 : 0.28, perfect ? 0.82 : 0.70);
   if (perfect) {
     // Extra shimmer on perfect
     try {
@@ -728,13 +728,13 @@ function playMiss() {
 function playLevelComplete() {
   // Power chord riff ascending
   [[110,0],[147,0.1],[196,0.2],[294,0.32],[392,0.44]].forEach(([f,d]) =>
-    setTimeout(() => playGuitar(f, 0.4, 0.5), d * 1000));
+    setTimeout(() => playGuitar(f, 0.4, 0.68), d * 1000));
 }
 
 function playVictory() {
   // Epic finishing chord sequence
   [[110,0],[147,0.08],[196,0.16],[220,0.24],[294,0.36],[392,0.5],[440,0.66],[392,0.82]].forEach(([f,d]) =>
-    setTimeout(() => playGuitar(f, 0.55, 0.55), d * 1000));
+    setTimeout(() => playGuitar(f, 0.55, 0.72), d * 1000));
 }
 
 // ── Background drum loop (kick + snare + hihat) ──
