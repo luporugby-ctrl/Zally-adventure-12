@@ -667,7 +667,97 @@ function playGuitar(freq, sustain = 0.55, vol = 0.75) {
 
 const LANE_FREQS = [110, 147, 196];
 
+// ── Distortion curve (waveshaper) for power chords ──
+let _distCurve = null;
+function getDistCurve() {
+  if (_distCurve) return _distCurve;
+  const n = 1024, c = new Float32Array(n), k = 18;
+  for (let i = 0; i < n; i++) {
+    const x = (i * 2) / n - 1;
+    c[i] = ((1 + k) * x) / (1 + k * Math.abs(x));
+  }
+  _distCurve = c;
+  return c;
+}
+
+// ── Unison rock "stab" (Eye of the Tiger): distorted palm-muted power chord
+//    + doubled bass + snare hit, all in the exact same instant ──
+function playRockStab(freq, sustain = 0.18, vol = 0.85) {
+  try {
+    const ac = getAC();
+    const t = ac.currentTime;
+
+    // ─ 1. Guitar: power chord (root + fifth), distorted, palm-muted ─
+    const gtrBus = ac.createGain();
+    gtrBus.gain.value = vol;
+    const shaper = ac.createWaveShaper();
+    shaper.curve = getDistCurve();
+    shaper.oversample = '4x';
+    const lp = ac.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(2600, t);
+    lp.frequency.exponentialRampToValueAtTime(900, t + sustain);
+    lp.Q.value = 0.7;
+    shaper.connect(lp); lp.connect(gtrBus); gtrBus.connect(ac.destination);
+
+    const gtrEnv = ac.createGain();
+    gtrEnv.gain.setValueAtTime(0.0001, t);
+    gtrEnv.gain.linearRampToValueAtTime(1.0, t + 0.004);
+    gtrEnv.gain.exponentialRampToValueAtTime(0.28, t + sustain * 0.6);
+    gtrEnv.gain.exponentialRampToValueAtTime(0.001, t + sustain + 0.08);
+    gtrEnv.connect(shaper);
+
+    [{ f: freq, g: 0.55 }, { f: freq * 1.5, g: 0.42 }, { f: freq * 2, g: 0.22 }].forEach(({ f, g }) => {
+      const o = ac.createGain(); o.gain.value = g;
+      const osc = ac.createOscillator();
+      osc.type = 'sawtooth'; osc.frequency.value = f;
+      osc.connect(o); o.connect(gtrEnv);
+      osc.start(t); osc.stop(t + sustain + 0.1);
+    });
+
+    // ─ 2. Electric bass doubled one octave below (unison) ─
+    const bass = ac.createOscillator();
+    const bassG = ac.createGain();
+    bass.type = 'triangle';
+    bass.frequency.value = freq / 2;
+    bassG.gain.setValueAtTime(0.0001, t);
+    bassG.gain.linearRampToValueAtTime(vol * 0.7, t + 0.006);
+    bassG.gain.exponentialRampToValueAtTime(0.001, t + sustain + 0.14);
+    bass.connect(bassG); bassG.connect(ac.destination);
+    bass.start(t); bass.stop(t + sustain + 0.16);
+
+    // ─ 3. Snare hit: noise + tonal body, same instant ─
+    const dur = 0.16;
+    const buf = ac.createBuffer(1, ac.sampleRate * dur, ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 2);
+    const noise = ac.createBufferSource(); noise.buffer = buf;
+    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1900; bp.Q.value = 0.8;
+    const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1200;
+    const snG = ac.createGain();
+    snG.gain.setValueAtTime(vol * 0.55, t);
+    snG.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+    noise.connect(bp); bp.connect(hp); hp.connect(snG); snG.connect(ac.destination);
+    noise.start(t);
+    const body = ac.createOscillator(); const bodyG = ac.createGain();
+    body.type = 'triangle';
+    body.frequency.setValueAtTime(330, t);
+    body.frequency.exponentialRampToValueAtTime(180, t + 0.06);
+    bodyG.gain.setValueAtTime(vol * 0.3, t);
+    bodyG.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    body.connect(bodyG); bodyG.connect(ac.destination);
+    body.start(t); body.stop(t + 0.1);
+
+  } catch(e) {}
+}
+
 function playHit(freq, perfect, sustain) {
+  if (game.levelIndex === 3) {
+    // Level 4 (Eye of the Tiger) — palm-muted power chord + bass + snare in unison
+    const s = (sustain !== undefined) ? sustain : (perfect ? 0.20 : 0.15);
+    playRockStab(freq, s, perfect ? 0.92 : 0.80);
+    return;
+  }
   if (game.levelIndex === 2) {
     const s = (sustain !== undefined) ? sustain : (perfect ? 0.50 : 0.35);
     playOBXa(freq, s, perfect ? 0.75 : 0.65);
@@ -1382,8 +1472,9 @@ function handleHit(laneIdx) {
   best.hit = true;
   best.hitAnim = 0;
   const perfect = bestDiff < 50;
+  // Level 4 (Eye of Tiger), lane 2 = dramatic Ab → power chord rings out longer
   const punchSustain = (game.levelIndex === 3 && laneIdx === 2)
-    ? (perfect ? 1.2 : 0.9) : undefined;
+    ? (perfect ? 0.7 : 0.55) : undefined;
   playHit(best.freq, perfect, punchSustain);
   const pts = perfect ? 150 : 100;
   game.score += pts;
