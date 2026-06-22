@@ -270,13 +270,6 @@ function buildEmailText(score, dateStr) {
 
 // ── Helpers ─────────────────────────────────────────────────────────────
 function getDriveImageUrl(fileId) {
-  try {
-    const blob     = DriveApp.getFileById(fileId).getBlob();
-    const base64   = Utilities.base64Encode(blob.getBytes());
-    const mimeType = blob.getContentType() || 'image/png';
-    return 'data:' + mimeType + ';base64,' + base64;
-  } catch (err) {
-    Logger.log('Image not found: ' + fileId);
-    return '';
-  }
+  if (!fileId || fileId.startsWith('YOUR_')) return '';
+  return 'https://lh3.googleusercontent.com/d/' + fileId;
 }
