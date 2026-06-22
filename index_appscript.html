@@ -309,51 +309,9 @@
     .touch-btn.lane2 { border-color: #00ffcc; color: #00ffcc; }
     .touch-btn:active { opacity: 0.7; }
 
-    /* ─── DEV PANEL ─── */
-    #devPanel {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-right: 14px;
-      flex-shrink: 0;
-    }
-    #devPanel .dev-label {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 5px;
-      color: #ff6600;
-      text-align: center;
-      letter-spacing: 2px;
-      margin-bottom: 4px;
-      opacity: 0.7;
-    }
-    .dev-btn {
-      background: #0a0a1a;
-      border: 1px solid #2a2a44;
-      color: #555;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 5px;
-      padding: 10px 8px;
-      cursor: pointer;
-      text-align: center;
-      line-height: 2;
-      letter-spacing: 1px;
-      width: 76px;
-      transition: border-color 0.12s, color 0.12s, background 0.12s;
-    }
-    .dev-btn:hover { border-color: #ff6600; color: #ff6600; background: #120a00; }
-    .dev-btn.dev-active { border-color: #ccff00; color: #ccff00; background: #081200; box-shadow: 0 0 8px rgba(204,255,0,0.3); }
-    @media (max-width: 960px) { #devPanel { display: none; } }
   </style>
 </head>
 <body>
-
-<div id="devPanel">
-  <div class="dev-label">DEV</div>
-  <button class="dev-btn" id="devBtn0" onclick="jumpToLevel(0)">01<br>SMOKE<br>ON THE<br>WATER</button>
-  <button class="dev-btn" id="devBtn1" onclick="jumpToLevel(1)">02<br>SEVEN<br>NATION<br>ARMY</button>
-  <button class="dev-btn" id="devBtn2" onclick="jumpToLevel(2)">03<br>JUMP<br>Van Halen</button>
-  <button class="dev-btn" id="devBtn3" onclick="jumpToLevel(3)">04<br>EYE OF<br>THE<br>TIGER</button>
-</div>
 
 <div id="wrapper">
   <canvas id="gameCanvas" width="800" height="600"></canvas>
@@ -1674,24 +1632,6 @@ function resetGame() {
 // ═══════════════════════════════════════════════
 //  DEV SHORTCUT
 // ═══════════════════════════════════════════════
-function jumpToLevel(idx) {
-  stopBeat();
-  game.levelIndex = idx;
-  game.score = 0;
-  game.starPower = 0;
-  game.volumeMix = 10;
-  game.notes = [];
-  game.levelDone = false;
-  game.flashFx = null;
-  game.comboText = null;
-  overlay.classList.remove('active');
-  hudEl.classList.remove('active');
-  touchControls.classList.remove('active');
-  replayBtn.classList.remove('active');
-  victoryOverlay.classList.remove('active');
-  document.querySelectorAll('.dev-btn').forEach((b, i) => b.classList.toggle('dev-active', i === idx));
-  showQuestion(idx);
-}
 
 // ═══════════════════════════════════════════════
 //  MAIN LOOP

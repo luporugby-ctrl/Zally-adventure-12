@@ -64,7 +64,7 @@ function sendCompletionEmail(payload) {
       return { ok: false, reason: 'no_recipient' };
     }
 
-    const subject = '🎸 Zally Metal – Challenge Recap & Cheat Sheet';
+    const subject = '[Zally Metal] Challenge Recap & Cheat Sheet';
 
     GmailApp.sendEmail(to, subject, buildEmailText(score, dateStr), {
       htmlBody : buildEmailHtml(score, dateStr),
