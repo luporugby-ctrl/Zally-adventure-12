@@ -8,7 +8,7 @@
 //  2. Right-click each file → "Get link" → copy the File ID
 //     (the long string between /d/ and /view in the share URL)
 //  3. Paste both IDs in IMAGE_IDS below
-//  4. Set RECIPIENT_EMAIL (the player's email, or use a dynamic approach)
+//  4. Set SENDER_NAME to the name shown in the "from" field
 //  5. Deploy → New Deployment → Web App
 //       • Execute as: Me
 //       • Who has access: Anyone (or "Anyone in your organisation")
@@ -23,9 +23,10 @@ const IMAGE_IDS = {
 };
 
 // ── Email config ────────────────────────────────────────────────────────
-// Leave RECIPIENT_EMAIL empty to send to the logged-in user (Session.getActiveUser()).
-// Or hardcode an address for testing: 'team@example.com'
+// RECIPIENT_EMAIL: leave empty → sends to the logged-in user (Session.getActiveUser()).
+// Hardcode for testing: 'andrea.lupetti@zalando.de'
 const RECIPIENT_EMAIL = '';
+const SENDER_NAME     = 'The AI Enablement Team & Zally Coach';
 
 // ── Web App entry point ─────────────────────────────────────────────────
 function doGet(e) {
@@ -43,37 +44,31 @@ function sendCompletionEmail(payload) {
   /*
     payload (JSON from client):
     {
-      playerName : string   — name entered by the player (future field)
+      playerName : string   — reserved for future name-entry field
       totalScore : number   — cumulative score across all 4 levels
       timestamp  : string   — ISO date string
     }
   */
-
   try {
-    const score     = payload.totalScore  || 0;
-    const player    = payload.playerName  || 'Rock Star';
-    const ts        = payload.timestamp   || new Date().toISOString();
-    const dateStr   = Utilities.formatDate(
-                        new Date(ts),
-                        Session.getScriptTimeZone(),
-                        'dd/MM/yyyy – HH:mm'
-                      );
+    const score   = payload.totalScore || 0;
+    const ts      = payload.timestamp  || new Date().toISOString();
+    const dateStr = Utilities.formatDate(
+                      new Date(ts),
+                      Session.getScriptTimeZone(),
+                      'dd/MM/yyyy – HH:mm'
+                    );
 
-    // Determine recipient
     const to = RECIPIENT_EMAIL || Session.getActiveUser().getEmail();
     if (!to) {
       Logger.log('No recipient email — skipping send.');
       return { ok: false, reason: 'no_recipient' };
     }
 
-    const subject = '🎸 Zally Metal – Mission Complete! All 4 Lyria 3.5 Challenges Unlocked';
+    const subject = '🎸 Zally Metal – Challenge Recap & Cheat Sheet';
 
-    const htmlBody = buildEmailHtml(player, score, dateStr);
-    const textBody = buildEmailText(player, score, dateStr);
-
-    GmailApp.sendEmail(to, subject, textBody, {
-      htmlBody : htmlBody,
-      name     : 'Zally Metal — YF&K Operations',
+    GmailApp.sendEmail(to, subject, buildEmailText(score, dateStr), {
+      htmlBody : buildEmailHtml(score, dateStr),
+      name     : SENDER_NAME,
     });
 
     Logger.log('Email sent to ' + to + ' | score: ' + score);
@@ -85,148 +80,190 @@ function sendCompletionEmail(payload) {
   }
 }
 
-// ── HTML email body ─────────────────────────────────────────────────────
-function buildEmailHtml(player, score, dateStr) {
-  // ── PASTE YOUR HOUSE-STYLE HTML EMAIL TEMPLATE BELOW ──
-  // Replace the placeholder content between the <body> tags with your
-  // organisation's standard template.  The variables available are:
-  //   {{PLAYER}}  → player name
-  //   {{SCORE}}   → numeric final score
-  //   {{DATE}}    → formatted completion date/time
-  //
-  // A minimal placeholder is provided so the function works out of the box.
-  return `
-<!DOCTYPE html>
+// ── HTML email — matches the Zally Adventure "Challenge Recap" style ────
+function buildEmailHtml(score, dateStr) {
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zally Metal – Mission Complete</title>
-  <style>
-    body { margin:0; padding:0; background:#0a0a0a; font-family: Arial, Helvetica, sans-serif; color:#ffffff; }
-    .wrapper { max-width:600px; margin:0 auto; background:#111111; border:1px solid #222; }
-    .header  { background:#000000; padding:32px 24px 20px; text-align:center; border-bottom:3px solid #ccff00; }
-    .header h1 { margin:0 0 4px; font-size:22px; letter-spacing:3px; color:#ccff00; text-transform:uppercase; }
-    .header p  { margin:0; font-size:11px; color:#666; letter-spacing:2px; text-transform:uppercase; }
-    .band    { background:#ccff00; height:4px; }
-    .body    { padding:32px 24px; }
-    .intro   { font-size:15px; line-height:1.7; color:#cccccc; margin-bottom:24px; }
-    .score-box { background:#0d0d0d; border:2px solid #ccff00; border-radius:4px;
-                 padding:20px 24px; text-align:center; margin:24px 0; }
-    .score-box .label { font-size:10px; letter-spacing:3px; color:#888; text-transform:uppercase; margin-bottom:6px; }
-    .score-box .value { font-size:36px; font-weight:bold; color:#ccff00; letter-spacing:2px; }
-    .score-box .sub   { font-size:11px; color:#555; margin-top:6px; }
-    .challenges { margin:24px 0; border-collapse:collapse; width:100%; }
-    .challenges td { padding:10px 12px; font-size:12px; border-bottom:1px solid #222; }
-    .challenges .num { color:#ccff00; font-weight:bold; width:32px; }
-    .challenges .title { color:#fff; }
-    .challenges .badge { color:#666; font-size:10px; text-align:right; }
-    .cta { text-align:center; margin:32px 0 8px; }
-    .cta a { display:inline-block; background:#ccff00; color:#000000; font-weight:bold;
-              font-size:12px; letter-spacing:2px; text-transform:uppercase;
-              padding:14px 36px; border-radius:3px; text-decoration:none; }
-    .footer { padding:20px 24px 28px; text-align:center; border-top:1px solid #1a1a1a; }
-    .footer p { margin:4px 0; font-size:11px; color:#444; }
-    .footer .sig { color:#666; margin-top:12px; font-size:10px; letter-spacing:1px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zally Metal – Challenge Recap & Cheat Sheet</title>
+<style>
+  body{margin:0;padding:20px 0;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#333}
+  .outer{max-width:620px;margin:0 auto}
+  .card{background:#ffffff;border:1px solid #dddddd;border-radius:2px;padding:32px 40px 28px}
+  .mission{font-family:'Courier New',Courier,monospace;font-size:26px;font-weight:bold;
+           color:#E07820;text-align:center;letter-spacing:4px;margin:0 0 28px}
+  p{margin:0 0 14px;line-height:1.65}
+  .divider{border:none;border-top:1px solid #eeeeee;margin:22px 0}
+  /* Challenge blocks — coloured left border */
+  .ch{border-left:4px solid #ccc;padding:10px 14px;margin:16px 0;background:#fafafa}
+  .ch.green {border-color:#4CAF50}
+  .ch.blue  {border-color:#2196F3}
+  .ch.orange{border-color:#FF9800}
+  .ch-title{font-weight:bold;color:#333;margin:0 0 5px;font-size:14px}
+  .ch-desc{margin:0 0 6px;color:#555}
+  .takeaway{margin:0 0 6px;font-style:italic;color:#444}
+  .takeaway strong{font-style:normal}
+  /* Boss battle box */
+  .boss{border:2px solid #FF5722;background:#fff8f5;padding:14px 16px;margin:16px 0;border-radius:2px}
+  .boss-title{font-weight:bold;color:#FF5722;margin:0 0 5px;font-size:14px}
+  /* Prompt cheat-sheet pill */
+  .prompt-block{background:#f5f5f5;border-left:3px solid #aaa;padding:8px 12px;
+                font-size:12px;color:#555;font-style:italic;margin-top:8px;line-height:1.55}
+  .prompt-label{font-size:10px;font-weight:bold;letter-spacing:1px;color:#999;
+                text-transform:uppercase;display:block;margin-bottom:3px;font-style:normal}
+  /* Save CTA */
+  .save{font-weight:bold;margin:22px 0 6px}
+  .closing{color:#555;margin:18px 0 0}
+  .sig{color:#666;font-style:italic}
+  /* Score badge */
+  .score-row{text-align:center;margin:18px 0}
+  .score-badge{display:inline-block;border:1px solid #E07820;border-radius:2px;
+               padding:6px 20px;font-size:12px;color:#E07820;letter-spacing:1px}
+</style>
 </head>
 <body>
-<div class="wrapper">
+<div class="outer">
+<div class="card">
 
   <!-- HEADER -->
-  <div class="header">
-    <h1>🎸 Mission Complete</h1>
-    <p>Zally Metal × YF&amp;K Operations — Lyria 3.5 Training</p>
-  </div>
-  <div class="band"></div>
+  <p class="mission">🎸 MISSION COMPLETE! 🎸</p>
 
-  <!-- BODY -->
-  <div class="body">
+  <p>Hi there,</p>
 
-    <p class="intro">
-      Hey <strong>${escapeHtml(player)}</strong>,<br><br>
-      You just shredded through all <strong>4 Lyria 3.5 challenges</strong>
-      with Zally Metal and unlocked the complete prompt toolkit for the YF&amp;K team anthem.
-      Rock on. 🤘
-    </p>
+  <p>You just shredded through all <strong>4 Lyria 3.5 challenges</strong> with Zally Metal
+  and unlocked the complete prompt toolkit to create music with AI. Rock on. 🤘</p>
 
-    <!-- SCORE -->
-    <div class="score-box">
-      <div class="label">Final Score</div>
-      <div class="value">${score.toLocaleString()}</div>
-      <div class="sub">Completed on ${dateStr}</div>
+  <p>Here is a recap of the <strong>Lyria 3.5</strong> skills you unlocked today:</p>
+
+  <hr class="divider">
+
+  <!-- CHALLENGE 1 -->
+  <div class="ch green">
+    <p class="ch-title">🎯 Challenge 1: THE SOUND BLUEPRINT</p>
+    <p class="ch-desc">You learned that vague prompts produce generic music.
+    Specificity is everything — genre, BPM, era, instruments, and how they interact.</p>
+    <p class="takeaway"><strong>Takeaway:</strong> <em>The more precise your prompt,
+    the closer the output to your vision. A good Lyria prompt is a full creative brief,
+    not a one-liner.</em></p>
+    <div class="prompt-block">
+      <span class="prompt-label">🔓 Unlocked Prompt</span>
+      "A synth-pop track in 80s style at 120 BPM, with bright synthesizers,
+      a retro-futuristic atmosphere and a saxophone solo in the bridge."
     </div>
+  </div>
 
-    <!-- CHALLENGES UNLOCKED -->
-    <p style="font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">
-      Challenges Unlocked
-    </p>
-    <table class="challenges">
-      <tr>
-        <td class="num">01</td>
-        <td class="title">The Sound Blueprint</td>
-        <td class="badge">Lyria 3.5 #1 — Specificity</td>
-      </tr>
-      <tr>
-        <td class="num">02</td>
-        <td class="title">The Energy Flow</td>
-        <td class="badge">Lyria 3.5 #2 — Structure &amp; Timestamps</td>
-      </tr>
-      <tr>
-        <td class="num">03</td>
-        <td class="title">The Lyric Injection</td>
-        <td class="badge">Lyria 3.5 #3 — Separation &amp; Tags</td>
-      </tr>
-      <tr>
-        <td class="num">04</td>
-        <td class="title">Boss Battle</td>
-        <td class="badge">Lyria 3.5 #4 — Vocal Persona</td>
-      </tr>
-    </table>
-
-    <!-- ── PASTE YOUR ADDITIONAL CONTENT / HOUSE-STYLE BLOCK HERE ── -->
-
-    <div class="cta">
-      <a href="https://deepmind.google/technologies/lyria/" target="_blank">
-        Explore Lyria 3.5 →
-      </a>
+  <!-- CHALLENGE 2 -->
+  <div class="ch blue">
+    <p class="ch-title">⚡ Challenge 2: THE ENERGY FLOW</p>
+    <p class="ch-desc">You learned how to control the temporal structure of a track.
+    Lyria 3.5 understands timelines in seconds — you can tell it exactly when to drop.</p>
+    <p class="takeaway"><strong>Takeaway:</strong> <em>Use structure tags
+    ([Intro] → [Verse] → [Chorus]) and explicit timing ("Drop at 32 seconds")
+    to engineer the energy curve of your track.</em></p>
+    <div class="prompt-block">
+      <span class="prompt-label">🔓 Unlocked Prompt</span>
+      [Intro] → Tense atmosphere, 8 seconds → [Verse 1] → Building energy →
+      [Pre-Chorus] → Drop at 32 seconds → [Chorus] → Rhythmic explosion with synth lead.
     </div>
-
   </div>
 
-  <!-- FOOTER -->
-  <div class="footer">
-    <p>This message was generated automatically by the Zally Metal training game.</p>
-    <p class="sig">YF&amp;K Operations — Human in the Loop · Always Active</p>
+  <!-- CHALLENGE 3 -->
+  <div class="ch orange">
+    <p class="ch-title">🎤 Challenge 3: THE LYRIC INJECTION</p>
+    <p class="ch-desc">You learned the correct syntax to inject lyrics into Lyria 3.5
+    without confusing the model. Mixing instructions and lyrics is the #1 prompting mistake.</p>
+    <p class="takeaway"><strong>Takeaway:</strong> <em>Always use the "Lyrics:" prefix
+    to separate text from musical instructions. Use [Verse 1], [Chorus] section tags
+    and () for backing vocals / echoes.</em></p>
+    <div class="prompt-block">
+      <span class="prompt-label">🔓 Unlocked Prompt</span>
+      Energetic synth-rock track, 120 BPM.<br>
+      Lyrics:<br>
+      [Verse 1] We move as one, the SOP is clear<br>
+      [Chorus] YF&amp;K forever (YF&amp;K!) / We rise together (rise!)
+    </div>
   </div>
 
+  <!-- BOSS CHALLENGE 4 -->
+  <div class="boss">
+    <p class="boss-title">🔥 BOSS CHALLENGE: THE VOCAL PERSONA</p>
+    <p class="ch-desc">You mastered the human-in-the-loop workflow to define a precise
+    vocal profile and test it rapidly — without burning your team's resources.</p>
+    <p class="takeaway"><strong>Takeaway:</strong> <em>Specify exact timbre + style +
+    range → iterate fast with <strong>lyria-3-clip-preview</strong> (30 sec clips) →
+    go full <strong>lyria-3</strong> only when the vocal is right.
+    Human in the Loop: always active.</em></p>
+    <div class="prompt-block">
+      <span class="prompt-label">🔓 Unlocked Prompt</span>
+      Vocal persona: Weathered Rocker (male), rough and raspy voice, grainy timbre,
+      controlled vibrato.<br>
+      Model: lyria-3-clip-preview → Quick 30-sec test → Refine vocal prompt
+      → Final version: full lyria-3
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SCORE -->
+  <div class="score-row">
+    <span class="score-badge">Final Score: ${score.toLocaleString()} pts &nbsp;·&nbsp; ${dateStr}</span>
+  </div>
+
+  <hr class="divider">
+
+  <p class="save">🕹️ Save this email as your personal Lyria 3.5 Cheat Sheet.</p>
+
+  <p class="closing">See you at the next challenge!<br>
+  <span class="sig">The AI Enablement Team &amp; Zally Coach</span></p>
+
+</div>
 </div>
 </body>
 </html>`;
 }
 
 // ── Plain-text fallback ─────────────────────────────────────────────────
-function buildEmailText(player, score, dateStr) {
+function buildEmailText(score, dateStr) {
   return [
-    '🎸 ZALLY METAL — MISSION COMPLETE',
-    '══════════════════════════════════',
+    '🎸 MISSION COMPLETE! 🎸',
+    '════════════════════════════════════════',
     '',
-    'Hey ' + player + ',',
+    'Hi there,',
     '',
-    'You just completed all 4 Lyria 3.5 challenges!',
+    'You just shredded through all 4 Lyria 3.5 challenges with Zally Metal!',
     '',
-    'Final Score : ' + score,
-    'Completed   : ' + dateStr,
+    '════════════════════════════════════════',
     '',
-    'CHALLENGES UNLOCKED',
-    '───────────────────',
-    '01 The Sound Blueprint      — Lyria 3.5 #1: Specificity',
-    '02 The Energy Flow          — Lyria 3.5 #2: Structure & Timestamps',
-    '03 The Lyric Injection      — Lyria 3.5 #3: Separation & Tags',
-    '04 Boss Battle              — Lyria 3.5 #4: Vocal Persona',
+    '🎯 Challenge 1: THE SOUND BLUEPRINT',
+    'Takeaway: Specificity is everything. Genre, BPM, era, instruments, interactions.',
+    'Prompt: "A synth-pop track in 80s style at 120 BPM, with bright synthesizers,',
+    'a retro-futuristic atmosphere and a saxophone solo in the bridge."',
     '',
-    '──────────────────────────────────────',
-    'YF&K Operations — Human in the Loop',
+    '⚡ Challenge 2: THE ENERGY FLOW',
+    'Takeaway: Use structure tags + explicit timing to shape the energy curve.',
+    'Prompt: [Intro] → Tense atmosphere, 8 seconds → Drop at 32 seconds → [Chorus]',
+    '',
+    '🎤 Challenge 3: THE LYRIC INJECTION',
+    'Takeaway: Always use "Lyrics:" prefix + [Verse]/[Chorus] tags + () for echoes.',
+    'Prompt: Energetic synth-rock, 120 BPM.',
+    'Lyrics: [Verse 1] We move as one, the SOP is clear',
+    '[Chorus] YF&K forever (YF&K!) / We rise together (rise!)',
+    '',
+    '🔥 BOSS CHALLENGE: THE VOCAL PERSONA',
+    'Takeaway: Define timbre + style → test with lyria-3-clip-preview → go full lyria-3.',
+    'Prompt: Vocal persona: Weathered Rocker (male), rough voice, grainy timbre.',
+    'Model: lyria-3-clip-preview → test → refine → lyria-3 full version.',
+    '',
+    '════════════════════════════════════════',
+    'Final Score: ' + score + ' pts  ·  ' + dateStr,
+    '════════════════════════════════════════',
+    '',
+    '🕹️ Save this email as your personal Lyria 3.5 Cheat Sheet.',
+    '',
+    'See you at the next challenge!',
+    'The AI Enablement Team & Zally Coach',
   ].join('\n');
 }
 
@@ -238,12 +275,4 @@ function getDriveImageUrl(fileId) {
     Logger.log('Image not found: ' + fileId);
     return '';
   }
-}
-
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
 }
