@@ -271,7 +271,10 @@ function buildEmailText(score, dateStr) {
 // ── Helpers ─────────────────────────────────────────────────────────────
 function getDriveImageUrl(fileId) {
   try {
-    return DriveApp.getFileById(fileId).getDownloadUrl();
+    const blob     = DriveApp.getFileById(fileId).getBlob();
+    const base64   = Utilities.base64Encode(blob.getBytes());
+    const mimeType = blob.getContentType() || 'image/png';
+    return 'data:' + mimeType + ';base64,' + base64;
   } catch (err) {
     Logger.log('Image not found: ' + fileId);
     return '';
