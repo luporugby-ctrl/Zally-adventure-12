@@ -127,13 +127,14 @@ function buildEmailHtml(score, dateStr) {
 <div class="outer">
 <div class="card">
 
-  <!-- HEADER -->
-  <p class="mission">🎸 MISSION COMPLETE! 🎸</p>
+  <!-- HEADER — emoji as numeric HTML entities (avoids GmailApp 4-byte UTF-8 corruption) -->
+  <!-- &#127928; = 🎸  &#129304; = 🤘  &#127919; = 🎯  &#9889; = ⚡  &#127908; = 🎤  &#128293; = 🔥  &#128275; = 🔓  &#128377; = 🕹️ -->
+  <p class="mission">&#127928; MISSION COMPLETE! &#127928;</p>
 
   <p>Hi there,</p>
 
   <p>You just shredded through all <strong>4 Lyria 3.5 challenges</strong> with Zally Metal
-  and unlocked the complete prompt toolkit to create music with AI. Rock on. 🤘</p>
+  and unlocked the complete prompt toolkit to create music with AI. Rock on. &#129304;</p>
 
   <p>Here is a recap of the <strong>Lyria 3.5</strong> skills you unlocked today:</p>
 
@@ -141,14 +142,14 @@ function buildEmailHtml(score, dateStr) {
 
   <!-- CHALLENGE 1 -->
   <div class="ch green">
-    <p class="ch-title">🎯 Challenge 1: THE SOUND BLUEPRINT</p>
+    <p class="ch-title">&#127919; Challenge 1: THE SOUND BLUEPRINT</p>
     <p class="ch-desc">You learned that vague prompts produce generic music.
     Specificity is everything — genre, BPM, era, instruments, and how they interact.</p>
     <p class="takeaway"><strong>Takeaway:</strong> <em>The more precise your prompt,
     the closer the output to your vision. A good Lyria prompt is a full creative brief,
     not a one-liner.</em></p>
     <div class="prompt-block">
-      <span class="prompt-label">🔓 Unlocked Prompt</span>
+      <span class="prompt-label">&#128275; Unlocked Prompt</span>
       "A synth-pop track in 80s style at 120 BPM, with bright synthesizers,
       a retro-futuristic atmosphere and a saxophone solo in the bridge."
     </div>
@@ -156,14 +157,14 @@ function buildEmailHtml(score, dateStr) {
 
   <!-- CHALLENGE 2 -->
   <div class="ch blue">
-    <p class="ch-title">⚡ Challenge 2: THE ENERGY FLOW</p>
+    <p class="ch-title">&#9889; Challenge 2: THE ENERGY FLOW</p>
     <p class="ch-desc">You learned how to control the temporal structure of a track.
     Lyria 3.5 understands timelines in seconds — you can tell it exactly when to drop.</p>
     <p class="takeaway"><strong>Takeaway:</strong> <em>Use structure tags
     ([Intro] → [Verse] → [Chorus]) and explicit timing ("Drop at 32 seconds")
     to engineer the energy curve of your track.</em></p>
     <div class="prompt-block">
-      <span class="prompt-label">🔓 Unlocked Prompt</span>
+      <span class="prompt-label">&#128275; Unlocked Prompt</span>
       [Intro] → Tense atmosphere, 8 seconds → [Verse 1] → Building energy →
       [Pre-Chorus] → Drop at 32 seconds → [Chorus] → Rhythmic explosion with synth lead.
     </div>
@@ -171,14 +172,14 @@ function buildEmailHtml(score, dateStr) {
 
   <!-- CHALLENGE 3 -->
   <div class="ch orange">
-    <p class="ch-title">🎤 Challenge 3: THE LYRIC INJECTION</p>
+    <p class="ch-title">&#127908; Challenge 3: THE LYRIC INJECTION</p>
     <p class="ch-desc">You learned the correct syntax to inject lyrics into Lyria 3.5
     without confusing the model. Mixing instructions and lyrics is the #1 prompting mistake.</p>
     <p class="takeaway"><strong>Takeaway:</strong> <em>Always use the "Lyrics:" prefix
     to separate text from musical instructions. Use [Verse 1], [Chorus] section tags
     and () for backing vocals / echoes.</em></p>
     <div class="prompt-block">
-      <span class="prompt-label">🔓 Unlocked Prompt</span>
+      <span class="prompt-label">&#128275; Unlocked Prompt</span>
       Energetic synth-rock track, 120 BPM.<br>
       Lyrics:<br>
       [Verse 1] We move as one, the SOP is clear<br>
@@ -188,7 +189,7 @@ function buildEmailHtml(score, dateStr) {
 
   <!-- BOSS CHALLENGE 4 -->
   <div class="boss">
-    <p class="boss-title">🔥 BOSS CHALLENGE: THE VOCAL PERSONA</p>
+    <p class="boss-title">&#128293; BOSS CHALLENGE: THE VOCAL PERSONA</p>
     <p class="ch-desc">You mastered the human-in-the-loop workflow to define a precise
     vocal profile and test it rapidly — without burning your team's resources.</p>
     <p class="takeaway"><strong>Takeaway:</strong> <em>Specify exact timbre + style +
@@ -196,7 +197,7 @@ function buildEmailHtml(score, dateStr) {
     go full <strong>lyria-3</strong> only when the vocal is right.
     Human in the Loop: always active.</em></p>
     <div class="prompt-block">
-      <span class="prompt-label">🔓 Unlocked Prompt</span>
+      <span class="prompt-label">&#128275; Unlocked Prompt</span>
       Vocal persona: Weathered Rocker (male), rough and raspy voice, grainy timbre,
       controlled vibrato.<br>
       Model: lyria-3-clip-preview → Quick 30-sec test → Refine vocal prompt
@@ -213,7 +214,7 @@ function buildEmailHtml(score, dateStr) {
 
   <hr class="divider">
 
-  <p class="save">🕹️ Save this email as your personal Lyria 3.5 Cheat Sheet.</p>
+  <p class="save">&#128377; Save this email as your personal Lyria 3.5 Cheat Sheet.</p>
 
   <p class="closing">See you at the next challenge!<br>
   <span class="sig">The AI Enablement Team &amp; Zally Coach</span></p>
