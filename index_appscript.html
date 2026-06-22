@@ -1329,6 +1329,17 @@ function renderTransmitting(t) {
         game.screen = 'VICTORY';
         victoryOverlay.classList.add('active');
         playVictory();
+        // ── Send completion email via Apps Script server ──
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withFailureHandler(function(err) { console.warn('Email send failed:', err); })
+            .withSuccessHandler(function(res) { console.log('Email sent:', JSON.stringify(res)); })
+            .sendCompletionEmail({
+              playerName : 'YF&K Rockstar',
+              totalScore : game.totalScore,
+              timestamp  : new Date().toISOString(),
+            });
+        }
       }
     }, 100);
   }
