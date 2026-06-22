@@ -241,9 +241,9 @@
       position: absolute;
       inset: 0;
       display: none;
-      align-items: flex-end;
+      align-items: flex-start;
       justify-content: center;
-      padding-bottom: 30px;
+      padding-top: 15px;
       z-index: 60;
       pointer-events: none;
     }
@@ -265,6 +265,28 @@
       background: linear-gradient(135deg, #ccff00, #99cc00);
       box-shadow: 0 0 30px rgba(204,255,0,0.8);
     }
+
+    /* ─── REPLAY BUTTON ─── */
+    #replayBtn {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      border: 3px solid #ccff00;
+      color: #ccff00;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      padding: 14px 28px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      display: none;
+      z-index: 45;
+      box-shadow: 0 0 20px rgba(204,255,0,0.5);
+      transition: all 0.15s;
+    }
+    #replayBtn.active { display: block; }
+    #replayBtn:hover { background: #ccff00; color: #000; box-shadow: 0 0 35px rgba(204,255,0,0.9); }
 
     /* ─── MOBILE TOUCH CONTROLS ─── */
     #touchControls {
@@ -296,9 +318,11 @@
     .touch-btn.lane1 { border-color: #ccff00; color: #ccff00; }
     .touch-btn.lane2 { border-color: #00ffcc; color: #00ffcc; }
     .touch-btn:active { opacity: 0.7; }
+
   </style>
 </head>
 <body>
+
 
 <div id="wrapper">
   <canvas id="gameCanvas" width="800" height="600"></canvas>
@@ -325,6 +349,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Replay track button (visible during gameplay) -->
+  <button id="replayBtn" onclick="replayTrack()">↩ REPLAY</button>
 
   <!-- Victory overlay with reset button -->
   <div id="victoryOverlay">
@@ -372,7 +399,7 @@ const LEVELS_DATA = [
     subtitle: "Genere & Strumenti",
     badge: "LYRIA 3.5 // BEST PRACTICE #1",
     scenario: "Il team vuole creare l'inno aziendale ma i colleghi usano prompt vaghi che producono output generici e inutilizzabili. Zally Metal deve correggere il tiro prima che sia troppo tardi!",
-    question: "Per creare un vero sound Synth-Pop anni '80 con gli strumenti giusti, quale struttura di prompt rispetta le Best Practice di Lyria 3.5?",
+    question: "Per ottenere un sound preciso e con gli strumenti giusti, quale struttura di prompt rispetta le Best Practice di Lyria 3.5?",
     options: [
       "\"Un brano rock con ritmo incalzante e una tastiera.\"",
       "\"Un brano synth-pop in stile anni '80 con un ritmo incalzante a 120 BPM, sintetizzatori brillanti, atmosfera retro-futuristica e un assolo di sassofono nel bridge.\"",
@@ -382,15 +409,20 @@ const LEVELS_DATA = [
     hint: "💡 I prompt vaghi producono risultati generici. Menziona SEMPRE:\n• Genere musicale\n• BPM (es. 120 BPM)\n• Era storica (es. anni '80)\n• Strumenti esatti\n• Come questi elementi interagiscono tra loro.",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 1:",
     unlockedPrompt: "\"Un brano synth-pop in stile anni '80 con un ritmo incalzante a 120 BPM, sintetizzatori brillanti, atmosfera retro-futuristica e un assolo di sassofono nel bridge.\"",
+    // ♪ "Smoke on the Water" — F# minor, carattere SHORT-SHORT-LONG
+    // Riff 1: F#-A-B(tenuta) / Riff 2: F#-A-C#-B(tenuta) / Riff 3: F#-A-B-A-F#
+    // Intervalli: 8th≈380ms tight pair, poi pausa lunga ~1200ms tra frasi
     notePattern: [
-      {l:0,t:1200},{l:1,t:1700},{l:2,t:2200},{l:0,t:2700},
-      {l:1,t:3200},{l:2,t:3700},{l:0,t:4000},{l:2,t:4500},
-      {l:1,t:5000},{l:0,t:5500},{l:1,t:6000},{l:2,t:6500},
-      {l:0,t:6750},{l:1,t:7000},{l:2,t:7500},{l:0,t:8000},
-      {l:1,t:8500},{l:2,t:9000},{l:0,t:9500},{l:1,t:10000},
-      {l:2,t:10500},{l:0,t:11000},{l:1,t:11500},{l:2,t:12000},
-      {l:0,t:12500},{l:1,t:13000},{l:2,t:13500},{l:0,t:14000},
-      {l:1,t:14500},{l:2,t:15000},{l:0,t:15500},{l:2,t:16000},
+      // — Round 1 —
+      {l:0,t:1000,f:185},{l:1,t:1380,f:220},{l:2,t:1760,f:247},           // F#-A-B [short-short-LONG]
+      {l:0,t:2900,f:185},{l:1,t:3280,f:220},{l:2,t:3660,f:277},{l:2,t:4040,f:247}, // F#-A-C#-B [short-short-short-LONG]
+      {l:0,t:5400,f:185},{l:1,t:5780,f:220},{l:2,t:6160,f:247},{l:1,t:6920,f:220},{l:0,t:7680,f:185}, // F#-A-B-A-F# [variazione]
+      // — Round 2 —
+      {l:0,t:9100,f:185},{l:1,t:9480,f:220},{l:2,t:9860,f:247},
+      {l:0,t:11000,f:185},{l:1,t:11380,f:220},{l:2,t:11760,f:277},{l:2,t:12140,f:247},
+      {l:0,t:13500,f:185},{l:1,t:13880,f:220},{l:2,t:14260,f:247},{l:1,t:15020,f:220},{l:0,t:15780,f:185},
+      // — Coda (Riff 1+2) —
+      {l:0,t:17200,f:185},{l:1,t:17580,f:220},{l:2,t:17960,f:277},{l:2,t:18340,f:247},
     ]
   },
   {
@@ -410,16 +442,30 @@ const LEVELS_DATA = [
     hint: "💡 Lyria 3.5 comprende la timeline in secondi!\nUsa:\n• Tag di struttura: [Intro], [Verse 1], [Pre-Chorus], [Chorus]\n• Frecce di progressione: [A] -> [B] -> [C]\n• Timing espliciti: \"Drop a 32 secondi\"\n• Descrittori di energia: \"crescendo esplosivo\"",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 2:",
     unlockedPrompt: "[Intro] -> Atmosfera tesa, 8 secondi -> [Verse 1] -> Energia crescente -> [Pre-Chorus] -> Drop a 32 secondi -> [Chorus] -> Esplosione ritmica con synth lead.",
+    // ♪ "Seven Nation Army" — in D, carattere D(LUNGA)·D-F(tight)·D·C-Bb(tight)·A(BASSISSIMA LUNGA)
+    // Il riff: D long — coppia D-F ravvicinata — D — coppia C-Bb ravvicinata — A bassissima lunga
+    // Intervalli: D=800ms, coppia ±350ms, chiusura A=110Hz (LA più bassa)
     notePattern: [
-      {l:1,t:1000},{l:0,t:1500},{l:2,t:2000},{l:1,t:2500},
-      {l:0,t:2750},{l:2,t:3000},{l:1,t:3500},{l:2,t:4000},
-      {l:0,t:4500},{l:1,t:5000},{l:2,t:5250},{l:0,t:5500},
-      {l:1,t:6000},{l:2,t:6500},{l:0,t:6750},{l:1,t:7000},
-      {l:2,t:7500},{l:0,t:8000},{l:1,t:8250},{l:2,t:8500},
-      {l:0,t:9000},{l:1,t:9500},{l:2,t:9750},{l:0,t:10000},
-      {l:1,t:10500},{l:2,t:11000},{l:0,t:11500},{l:1,t:12000},
-      {l:2,t:12500},{l:0,t:13000},{l:1,t:13500},{l:2,t:14000},
-      {l:0,t:14500},{l:1,t:15000},{l:2,t:15500},{l:0,t:16000},
+      // — Giro 1 —
+      {l:1,t:900,f:147},                              // D (lunga apertura)
+      {l:1,t:1700,f:147},{l:2,t:2050,f:175},          // D-F (coppia tight +350ms)
+      {l:1,t:2700,f:147},                              // D
+      {l:0,t:3350,f:131},{l:0,t:3700,f:117},           // C-Bb (coppia tight)
+      {l:0,t:4350,f:110},                              // A (BASSISSIMA, lunghissima)
+      // — Giro 2 —
+      {l:1,t:6200,f:147},
+      {l:1,t:7000,f:147},{l:2,t:7350,f:175},
+      {l:1,t:8000,f:147},
+      {l:0,t:8650,f:131},{l:0,t:9000,f:117},
+      {l:0,t:9650,f:110},                              // A (BASSISSIMA)
+      // — Variazione D-F-G-F-D (ascesa+discesa) —
+      {l:1,t:11500,f:147},{l:2,t:12150,f:175},{l:2,t:12800,f:196},{l:2,t:13450,f:175},{l:1,t:14100,f:147},
+      // — Giro 3 (chiusura) —
+      {l:1,t:16000,f:147},
+      {l:1,t:16800,f:147},{l:2,t:17150,f:175},
+      {l:1,t:17800,f:147},
+      {l:0,t:18450,f:131},{l:0,t:18800,f:117},
+      {l:0,t:19450,f:110},                             // A (BASSISSIMA — la nota mancante!)
     ]
   },
   {
@@ -439,18 +485,26 @@ const LEVELS_DATA = [
     hint: "💡 La struttura corretta prevede:\n• Prefisso \"Lyrics:\" per separare il testo\n• Tag di sezione: [Verse 1], [Chorus], [Bridge]\n• Parentesi tonde per cori/echi: (YF&K!)\n• Istruzioni musicali PRIMA del testo\n• Il modello legge le due parti separatamente!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 3:",
     unlockedPrompt: "Brano synth-rock energetico, 120 BPM.\nLyrics:\n[Verse 1]\nWe move as one, the SOP is clear\n[Chorus]\nYF&K forever (YF&K!)\nWe rise together (rise!)",
+    // ♪ "Jump" (Van Halen, 1984) — timing utente ×1.4, contorno corretto (Do = nota PIÙ ACUTA)
+    // Do(LUNGO 980ms) · Sol-Do(tight) · pausa · Fa-Fa(tight) · Sol(LUNGO)
+    // Do=C5=523 (picco), Sol=G4=392, Fa=F4=349 — Lane: 0=Fa, 1=Do, 2=Sol — accordi C-G-F
     notePattern: [
-      {l:0,t:800},{l:2,t:1200},{l:1,t:1600},{l:0,t:2000},
-      {l:2,t:2200},{l:1,t:2400},{l:0,t:2800},{l:1,t:3200},
-      {l:2,t:3600},{l:0,t:4000},{l:1,t:4200},{l:2,t:4400},
-      {l:0,t:4800},{l:1,t:5200},{l:2,t:5600},{l:0,t:5800},
-      {l:1,t:6000},{l:2,t:6400},{l:0,t:6800},{l:1,t:7000},
-      {l:2,t:7200},{l:0,t:7600},{l:1,t:8000},{l:2,t:8200},
-      {l:0,t:8400},{l:1,t:8800},{l:2,t:9200},{l:0,t:9600},
-      {l:1,t:10000},{l:2,t:10400},{l:0,t:10800},{l:1,t:11200},
-      {l:2,t:11600},{l:0,t:12000},{l:1,t:12400},{l:2,t:12800},
-      {l:0,t:13200},{l:1,t:13600},{l:2,t:14000},{l:0,t:14400},
-      {l:1,t:14800},{l:2,t:15200},{l:0,t:15600},
+      // — Giro 1 (base 500) —
+      {l:1,t:500,f:523},
+      {l:2,t:1480,f:392},{l:1,t:2040,f:523},
+      {l:0,t:3020,f:349},{l:0,t:3580,f:349},{l:2,t:4000,f:392},
+      // — Giro 2 (base 5600) — vocal "JUMP!" sul Sol a 6580ms
+      {l:1,t:5600,f:523},
+      {l:2,t:6580,f:392},{l:1,t:7140,f:523},
+      {l:0,t:8120,f:349},{l:0,t:8680,f:349},{l:2,t:9100,f:392},
+      // — Giro 3 (base 10700) —
+      {l:1,t:10700,f:523},
+      {l:2,t:11680,f:392},{l:1,t:12240,f:523},
+      {l:0,t:13220,f:349},{l:0,t:13780,f:349},{l:2,t:14200,f:392},
+      // — Giro 4 (base 15800) — vocal "JUMP!" sul Sol a 16780ms
+      {l:1,t:15800,f:523},
+      {l:2,t:16780,f:392},{l:1,t:17340,f:523},
+      {l:0,t:18320,f:349},{l:0,t:18880,f:349},{l:2,t:19300,f:392},
     ]
   },
   {
@@ -470,23 +524,33 @@ const LEVELS_DATA = [
     hint: "💡 Il workflow ottimale per i profili vocali:\n• Definisci: estensione, timbro, stile (es. roca, granulosa)\n• Usa lyria-3-clip-preview per test rapidi a 30 secondi\n• Itera sul prompt vocale prima di spendere risorse\n• Solo dopo: passa a lyria-3 per la versione completa!\n• Human in the Loop: tu guidi, l'AI esegue!",
     promptLabel: "PROMPT SBLOCCATO — LEVEL 4 (BOSS):",
     unlockedPrompt: "Vocal persona: Weathered Rocker (uomo), voce roca e ruvida, timbro granuloso, vibrato controllato.\nModel: lyria-3-clip-preview\n→ Test rapido 30 sec → Affina prompt vocale\n→ Versione finale: lyria-3 completo",
+    // ♪ "Eye of the Tiger" (Survivor, 1982) — Do minore, pattern originale completo 3 round
+    // Ritmo: PAM!(pausa)  PAM-pam-PAM × 3  poi verso discendente C-C-Bb-C-Bb-Ab
+    // C4=262, Bb3=233, Ab3=208 — discesa naturale C-Bb-Ab (la b6, l'accordo VI drammatico)
+    // Lane: 0=Bb/Ab (sinistra), 1=C (centro), 2=Ab punch (destra, sustain lungo)
     notePattern: [
-      {l:0,t:600},{l:1,t:900},{l:2,t:1200},{l:0,t:1400},
-      {l:1,t:1600},{l:2,t:1800},{l:0,t:2000},{l:2,t:2200},
-      {l:1,t:2400},{l:0,t:2600},{l:2,t:2800},{l:1,t:3000},
-      {l:0,t:3200},{l:1,t:3400},{l:2,t:3600},{l:0,t:3750},
-      {l:1,t:3900},{l:2,t:4100},{l:0,t:4300},{l:1,t:4500},
-      {l:2,t:4700},{l:0,t:4900},{l:2,t:5100},{l:1,t:5300},
-      {l:0,t:5500},{l:1,t:5700},{l:2,t:5850},{l:0,t:6000},
-      {l:1,t:6200},{l:2,t:6400},{l:0,t:6600},{l:1,t:6800},
-      {l:2,t:7000},{l:0,t:7150},{l:1,t:7300},{l:2,t:7500},
-      {l:0,t:7700},{l:1,t:7900},{l:2,t:8050},{l:0,t:8200},
-      {l:1,t:8400},{l:2,t:8600},{l:0,t:8800},{l:1,t:9000},
-      {l:2,t:9150},{l:0,t:9300},{l:1,t:9500},{l:2,t:9700},
-      {l:0,t:9900},{l:1,t:10100},{l:2,t:10250},{l:0,t:10400},
-      {l:1,t:10600},{l:2,t:10800},{l:0,t:11000},{l:1,t:11200},
-      {l:2,t:11400},{l:0,t:11550},{l:1,t:11700},{l:2,t:11900},
-      {l:0,t:12100},{l:1,t:12300},{l:2,t:12500},{l:0,t:12700},
+      // — Round 1: intro PAM! ... PAM-pam-PAM! ×3 —
+      {l:1,t:500,f:262},
+      {l:1,t:1300,f:262},{l:0,t:1600,f:233},{l:1,t:1900,f:262},
+      {l:1,t:2700,f:262},{l:0,t:3000,f:233},{l:1,t:3300,f:262},
+      {l:1,t:4100,f:262},{l:0,t:4400,f:233},{l:2,t:4700,f:208},
+      // — Verso discendente: C-C-Bb-C-Bb-Ab —
+      {l:1,t:5500,f:262},{l:1,t:5900,f:262},
+      {l:0,t:6300,f:233},{l:1,t:6700,f:262},{l:0,t:7100,f:233},{l:0,t:7500,f:208},
+      // — Round 2 —
+      {l:1,t:8300,f:262},
+      {l:1,t:9100,f:262},{l:0,t:9400,f:233},{l:1,t:9700,f:262},
+      {l:1,t:10500,f:262},{l:0,t:10800,f:233},{l:1,t:11100,f:262},
+      {l:1,t:11900,f:262},{l:0,t:12200,f:233},{l:2,t:12500,f:208},
+      {l:1,t:13300,f:262},{l:1,t:13700,f:262},
+      {l:0,t:14100,f:233},{l:1,t:14500,f:262},{l:0,t:14900,f:233},{l:0,t:15300,f:208},
+      // — Round 3 (climax) —
+      {l:1,t:16100,f:262},
+      {l:1,t:16900,f:262},{l:0,t:17200,f:233},{l:1,t:17500,f:262},
+      {l:1,t:18300,f:262},{l:0,t:18600,f:233},{l:1,t:18900,f:262},
+      {l:1,t:19700,f:262},{l:0,t:20000,f:233},{l:2,t:20300,f:208},
+      {l:1,t:21100,f:262},{l:1,t:21500,f:262},
+      {l:0,t:21900,f:233},{l:1,t:22300,f:262},{l:0,t:22700,f:233},{l:0,t:23100,f:208},
     ]
   }
 ];
@@ -507,6 +571,392 @@ const barVolume     = document.getElementById('barVolume');
 const barStar       = document.getElementById('barStar');
 const victoryOverlay= document.getElementById('victoryOverlay');
 const touchControls = document.getElementById('touchControls');
+const replayBtn     = document.getElementById('replayBtn');
+
+// ═══════════════════════════════════════════════
+//  AUDIO ENGINE — Electric Guitar (Web Audio API)
+// ═══════════════════════════════════════════════
+let audioCtx = null;
+
+function getAC() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// Hard-clip distortion curve (makes it sound like overdrive/distortion pedal)
+function makeDistortionCurve(amount) {
+  const n = 512, curve = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = (i * 2) / n - 1;
+    curve[i] = ((Math.PI + amount) * x) / (Math.PI + amount * Math.abs(x));
+  }
+  return curve;
+}
+
+// Clean bell/pluck tone — sine fundamental + harmonic overtones, no distortion
+// Pitch is crystal clear, melodies are immediately recognizable
+function playGuitar(freq, sustain = 0.55, vol = 0.75) {
+  try {
+    const ac = getAC();
+    const t = ac.currentTime;
+
+    // Layered harmonics: fundamental + 2nd + 3rd (natural overtone series)
+    // Volumes taper off so fundamental dominates → pitch is unambiguous
+    const partials = [
+      { mult: 1.0, type: 'sine',     gain: 1.00 },
+      { mult: 2.0, type: 'sine',     gain: 0.28 },
+      { mult: 3.0, type: 'triangle', gain: 0.10 },
+    ];
+
+    partials.forEach(({ mult, type, gain }) => {
+      const osc = ac.createOscillator();
+      const og  = ac.createGain();
+      osc.type = type;
+      osc.frequency.value = freq * mult;
+
+      // Each partial decays at its own speed (higher = faster, like a real string)
+      og.gain.setValueAtTime(0.001, t);
+      og.gain.linearRampToValueAtTime(vol * gain, t + 0.006);
+      og.gain.exponentialRampToValueAtTime(vol * gain * 0.6, t + 0.04);
+      og.gain.exponentialRampToValueAtTime(0.0001, t + sustain * (1 / mult));
+
+      osc.connect(og);
+      og.connect(ac.destination);
+      osc.start(t);
+      osc.stop(t + sustain + 0.1);
+    });
+
+    // Soft attack click (fingerpick texture, very subtle)
+    const nBuf = ac.createBuffer(1, ac.sampleRate * 0.010, ac.sampleRate);
+    const nd = nBuf.getChannelData(0);
+    for (let j = 0; j < nd.length; j++)
+      nd[j] = (Math.random() * 2 - 1) * Math.exp(-j / (ac.sampleRate * 0.002));
+    const nSrc = ac.createBufferSource();
+    nSrc.buffer = nBuf;
+    const nGain = ac.createGain();
+    nGain.gain.value = 0.06;
+    nSrc.connect(nGain);
+    nGain.connect(ac.destination);
+    nSrc.start(t);
+
+  } catch(e) {}
+}
+
+// Lane-specific guitar notes (like Guitar Hero fret colors)
+// Green(low E) / Red(A) / Yellow(D) / Blue(G) / Orange(B)
+// We have 3 lanes → E2=82Hz, A2=110Hz, D3=147Hz (power chords!)
+const LANE_FREQS = [110, 147, 196]; // A2, D3, G3
+
+// ── Curva di distorzione (waveshaper) per i power chord ──
+let _distCurve = null;
+function getDistCurve() {
+  if (_distCurve) return _distCurve;
+  const n = 1024, c = new Float32Array(n), k = 18;
+  for (let i = 0; i < n; i++) {
+    const x = (i * 2) / n - 1;
+    c[i] = ((1 + k) * x) / (1 + k * Math.abs(x)); // soft-clipping
+  }
+  _distCurve = c;
+  return c;
+}
+
+// ── "Botta" rock all'unisono (Eye of the Tiger): power chord distorto +
+//    basso raddoppiato + colpo di rullante, esattamente nello stesso istante ──
+function playRockStab(freq, sustain = 0.18, vol = 0.85) {
+  try {
+    const ac = getAC();
+    const t = ac.currentTime;
+
+    // ─ 1. Chitarra: power chord (root + quinta) distorto, palm-muted ─
+    const gtrBus = ac.createGain();
+    gtrBus.gain.value = vol;
+    const shaper = ac.createWaveShaper();
+    shaper.curve = getDistCurve();
+    shaper.oversample = '4x';
+    const lp = ac.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(2600, t);
+    lp.frequency.exponentialRampToValueAtTime(900, t + sustain); // palm mute = chiude in fretta
+    lp.Q.value = 0.7;
+    shaper.connect(lp); lp.connect(gtrBus); gtrBus.connect(ac.destination);
+
+    // envelope palm-muted: attacco istantaneo, decadimento rapido
+    const gtrEnv = ac.createGain();
+    gtrEnv.gain.setValueAtTime(0.0001, t);
+    gtrEnv.gain.linearRampToValueAtTime(1.0, t + 0.004);
+    gtrEnv.gain.exponentialRampToValueAtTime(0.28, t + sustain * 0.6);
+    gtrEnv.gain.exponentialRampToValueAtTime(0.001, t + sustain + 0.08);
+    gtrEnv.connect(shaper);
+
+    [{ f: freq, g: 0.55 }, { f: freq * 1.5, g: 0.42 }, { f: freq * 2, g: 0.22 }].forEach(({ f, g }) => {
+      const o = ac.createGain(); o.gain.value = g;
+      const osc = ac.createOscillator();
+      osc.type = 'sawtooth'; osc.frequency.value = f;
+      osc.connect(o); o.connect(gtrEnv);
+      osc.start(t); osc.stop(t + sustain + 0.1);
+    });
+
+    // ─ 2. Basso elettrico raddoppiato un'ottava sotto (unisono) ─
+    const bass = ac.createOscillator();
+    const bassG = ac.createGain();
+    bass.type = 'triangle';
+    bass.frequency.value = freq / 2;
+    bassG.gain.setValueAtTime(0.0001, t);
+    bassG.gain.linearRampToValueAtTime(vol * 0.7, t + 0.006);
+    bassG.gain.exponentialRampToValueAtTime(0.001, t + sustain + 0.14);
+    bass.connect(bassG); bassG.connect(ac.destination);
+    bass.start(t); bass.stop(t + sustain + 0.16);
+
+    // ─ 3. Colpo di rullante (snare): rumore + corpo tonale, stesso istante ─
+    const dur = 0.16;
+    const buf = ac.createBuffer(1, ac.sampleRate * dur, ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 2);
+    const noise = ac.createBufferSource(); noise.buffer = buf;
+    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1900; bp.Q.value = 0.8;
+    const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1200;
+    const snG = ac.createGain();
+    snG.gain.setValueAtTime(vol * 0.55, t);
+    snG.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+    noise.connect(bp); bp.connect(hp); hp.connect(snG); snG.connect(ac.destination);
+    noise.start(t);
+    // corpo del rullante (tono basso che cade)
+    const body = ac.createOscillator(); const bodyG = ac.createGain();
+    body.type = 'triangle';
+    body.frequency.setValueAtTime(330, t);
+    body.frequency.exponentialRampToValueAtTime(180, t + 0.06);
+    bodyG.gain.setValueAtTime(vol * 0.3, t);
+    bodyG.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    body.connect(bodyG); bodyG.connect(ac.destination);
+    body.start(t); body.stop(t + 0.1);
+
+  } catch(e) {}
+}
+
+function playHit(freq, perfect, sustain) {
+  if (game.levelIndex === 3) {
+    // Level 4 (Eye of the Tiger) — power chord palm-muted + basso + rullante all'unisono
+    const s = (sustain !== undefined) ? sustain : (perfect ? 0.20 : 0.15);
+    playRockStab(freq, s, perfect ? 0.92 : 0.80);
+    return;
+  }
+  if (game.levelIndex === 2) {
+    // Level 3 (Jump) — Oberheim OB-Xa analog synth
+    const s = (sustain !== undefined) ? sustain : (perfect ? 0.50 : 0.35);
+    playOBXa(freq, s, perfect ? 0.75 : 0.65);
+    return;
+  }
+  const s = (sustain !== undefined) ? sustain : (perfect ? 0.55 : 0.38);
+  playGuitar(freq, s, perfect ? 0.82 : 0.70);
+  if (perfect) {
+    // Extra shimmer on perfect
+    try {
+      const ac = getAC();
+      const osc = ac.createOscillator();
+      const g = ac.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq * 4;
+      g.gain.setValueAtTime(0.12, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.25);
+      osc.connect(g); g.connect(ac.destination);
+      osc.start(); osc.stop(ac.currentTime + 0.28);
+    } catch(e) {}
+  }
+}
+
+function playMiss() {
+  try {
+    const ac = getAC();
+    const t = ac.currentTime;
+    // Muted thud — dead string
+    const osc = ac.createOscillator();
+    const g = ac.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(80, t);
+    osc.frequency.exponentialRampToValueAtTime(40, t + 0.09);
+    g.gain.setValueAtTime(0.3, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+    const lp = ac.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 400;
+    osc.connect(lp); lp.connect(g); g.connect(ac.destination);
+    osc.start(t); osc.stop(t + 0.12);
+  } catch(e) {}
+}
+
+function playLevelComplete() {
+  // Power chord riff ascending
+  [[110,0],[147,0.1],[196,0.2],[294,0.32],[392,0.44]].forEach(([f,d]) =>
+    setTimeout(() => playGuitar(f, 0.4, 0.68), d * 1000));
+}
+
+function playVictory() {
+  // Epic finishing chord sequence
+  [[110,0],[147,0.08],[196,0.16],[220,0.24],[294,0.36],[392,0.5],[440,0.66],[392,0.82]].forEach(([f,d]) =>
+    setTimeout(() => playGuitar(f, 0.55, 0.72), d * 1000));
+}
+
+// ── Oberheim OB-Xa — punchy staccato chords (Jump style) ──
+// 4 detuned sawtooth oscillators → fat ensemble texture
+// Fixed open LP filter → bright, not muddy
+// Fast 30ms attack, short sustain, quick 160ms release
+function playOBXa(freq, sustain = 0.45, vol = 0.70) {
+  try {
+    const ac = getAC();
+    const t = ac.currentTime;
+
+    const masterGain = ac.createGain();
+    masterGain.gain.value = vol;
+    masterGain.connect(ac.destination);
+
+    // Fixed LP filter — open and bright, raised for higher octave
+    const filter = ac.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 5000;
+    filter.Q.value = 0.6;
+    filter.connect(masterGain);
+
+    // 4 detuned saws: 2 wide ±7 cents + 2 narrow ±2 cents
+    [
+      { det: -7, og: 0.28 },
+      { det: +7, og: 0.28 },
+      { det: -2, og: 0.22 },
+      { det: +2, og: 0.22 },
+    ].forEach(({ det, og }) => {
+      const osc = ac.createOscillator();
+      const g = ac.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.value = freq;
+      osc.detune.value = det;
+
+      g.gain.setValueAtTime(0.001, t);
+      g.gain.linearRampToValueAtTime(og, t + 0.030);      // 30ms attack
+      g.gain.setValueAtTime(og, t + sustain);             // hold flat
+      g.gain.exponentialRampToValueAtTime(0.001, t + sustain + 0.16); // 160ms release
+
+      osc.connect(g);
+      g.connect(filter);
+      osc.start(t);
+      osc.stop(t + sustain + 0.22);
+    });
+
+    // Sub octave (sine) — body under the chord
+    const sub = ac.createOscillator();
+    const subG = ac.createGain();
+    sub.type = 'sine';
+    sub.frequency.value = freq / 2;
+    subG.gain.setValueAtTime(0.001, t);
+    subG.gain.linearRampToValueAtTime(0.10, t + 0.030);
+    subG.gain.setValueAtTime(0.10, t + sustain);
+    subG.gain.exponentialRampToValueAtTime(0.001, t + sustain + 0.16);
+    sub.connect(subG);
+    subG.connect(filter);
+    sub.start(t);
+    sub.stop(t + sustain + 0.22);
+
+  } catch(e) {}
+}
+
+// ── David Lee Roth "JUMP!" vocal shout approximation ──
+// Rising sawtooth + two bandpass formants ("AH" vowel)
+function playVocalJump() {
+  try {
+    const ac = getAC();
+    const t = ac.currentTime;
+
+    const osc = ac.createOscillator();
+    osc.type = 'sawtooth';
+    // Pitch glide: chest voice 260Hz → head voice 480Hz → settle 430Hz
+    osc.frequency.setValueAtTime(260, t);
+    osc.frequency.exponentialRampToValueAtTime(480, t + 0.22);
+    osc.frequency.exponentialRampToValueAtTime(430, t + 0.55);
+
+    // First formant "AH" (~900Hz)
+    const f1 = ac.createBiquadFilter();
+    f1.type = 'bandpass';
+    f1.frequency.value = 900;
+    f1.Q.value = 4;
+
+    // Second formant "AH" (~1600Hz)
+    const f2 = ac.createBiquadFilter();
+    f2.type = 'bandpass';
+    f2.frequency.value = 1600;
+    f2.Q.value = 3;
+
+    const gF1 = ac.createGain(); gF1.gain.value = 0.7;
+    const gF2 = ac.createGain(); gF2.gain.value = 0.45;
+
+    const env = ac.createGain();
+    env.gain.setValueAtTime(0, t);
+    env.gain.linearRampToValueAtTime(0.55, t + 0.04);  // sharp attack
+    env.gain.setValueAtTime(0.55, t + 0.30);
+    env.gain.exponentialRampToValueAtTime(0.001, t + 0.70);
+
+    osc.connect(f1); osc.connect(f2);
+    f1.connect(gF1); f2.connect(gF2);
+    gF1.connect(env); gF2.connect(env);
+    env.connect(ac.destination);
+
+    osc.start(t);
+    osc.stop(t + 0.80);
+  } catch(e) {}
+}
+
+let beatInterval = null;
+function startBeat() {
+  stopBeat();
+  let tick = 0;
+  beatInterval = setInterval(() => {
+    if (game.screen !== 'PLAYING') { stopBeat(); return; }
+    const ac = getAC();
+
+    // KICK — beats 0 and 2
+    if (tick % 4 === 0 || tick % 4 === 2) {
+      try {
+        const buf = ac.createBuffer(1, ac.sampleRate * 0.18, ac.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++)
+          d[i] = Math.sin(2 * Math.PI * 55 * i / ac.sampleRate * Math.exp(-i/(ac.sampleRate*0.025))) *
+                 Math.exp(-i / (ac.sampleRate * 0.06));
+        const src = ac.createBufferSource(); src.buffer = buf;
+        const g = ac.createGain(); g.gain.value = 0.8;
+        src.connect(g); g.connect(ac.destination); src.start();
+      } catch(e) {}
+    }
+
+    // SNARE — beats 1 and 3
+    if (tick % 4 === 1 || tick % 4 === 3) {
+      try {
+        const buf = ac.createBuffer(1, ac.sampleRate * 0.12, ac.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++)
+          d[i] = ((Math.random()*2-1) * 0.7 + Math.sin(2*Math.PI*220*i/ac.sampleRate) * 0.3) *
+                 Math.exp(-i / (ac.sampleRate * 0.035));
+        const src = ac.createBufferSource(); src.buffer = buf;
+        const g = ac.createGain(); g.gain.value = 0.55;
+        const hpf = ac.createBiquadFilter(); hpf.type='highpass'; hpf.frequency.value=200;
+        src.connect(hpf); hpf.connect(g); g.connect(ac.destination); src.start();
+      } catch(e) {}
+    }
+
+    // HI-HAT — every 8th note
+    try {
+      const buf = ac.createBuffer(1, ac.sampleRate * 0.04, ac.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i=0; i<d.length; i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(ac.sampleRate*0.012));
+      const src = ac.createBufferSource(); src.buffer = buf;
+      const hpf = ac.createBiquadFilter(); hpf.type='highpass'; hpf.frequency.value=8000;
+      const g = ac.createGain(); g.gain.value = tick%4===0||tick%4===2 ? 0.1 : 0.18;
+      src.connect(hpf); hpf.connect(g); g.connect(ac.destination); src.start();
+    } catch(e) {}
+
+    tick++;
+  }, 250); // 120 BPM, 8th notes
+}
+
+function stopBeat() {
+  if (beatInterval) { clearInterval(beatInterval); beatInterval = null; }
+}
 
 // ═══════════════════════════════════════════════
 //  GAME CONFIG
@@ -519,9 +969,9 @@ const LANES = [
 const LANE_W      = 80;
 const NOTE_R      = 24;
 const TRIGGER_Y   = 500;
-const TRAVEL_MS   = 2000;
-const HIT_WINDOW  = 90;   // ms
-const GAME_DUR    = 18000; // 18 sec gameplay
+const TRAVEL_MS   = 4200;  // very slow fall = easy to read ahead
+const HIT_WINDOW  = 420;   // super forgiving — almost impossible to miss
+const GAME_DUR    = 28000; // safety ceiling — level always ends via lastNoteTime+800 first
 
 // ═══════════════════════════════════════════════
 //  GAME STATE
@@ -532,8 +982,8 @@ const game = {
   score: 0,
   totalScore: 0,
   starPower: 0,
-  volumeMix: 5,
-  maxVol: 5,
+  volumeMix: 10,
+  maxVol: 10,
   maxStar: 100,
   notes: [],
   gameStart: 0,
@@ -587,210 +1037,39 @@ function drawBackground() {
   }
 }
 
-// ─── Zally Metal character ───────────────────────
-function drawZally(cx, cy, scale, t) {
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.scale(scale, scale);
+// ─── Zally Metal character (PNG sprite) ───────────
+const zallyImg = new Image();
+let zallyImgLoaded = false;
+zallyImg.onload = () => { zallyImgLoaded = true; };
+zallyImg.src = 'zally_metal.png';
 
+const zallyJumpImg = new Image();
+let zallyJumpLoaded = false;
+zallyJumpImg.onload = () => { zallyJumpLoaded = true; };
+zallyJumpImg.src = 'zally_metal_jump.png';
+
+function drawZally(cx, cy, scale, t) {
   const bob = Math.sin(t * 0.0025) * 5;
-  const arm = Math.sin(t * 0.003);
-  ctx.translate(0, bob);
 
   // Shadow
   ctx.fillStyle = 'rgba(0,0,0,0.3)';
   ctx.beginPath();
-  ctx.ellipse(0, 100, 28, 8, 0, 0, Math.PI * 2);
+  ctx.ellipse(cx, cy + 100 * scale, 30 * scale, 9 * scale, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // Legs
-  ctx.fillStyle = '#0a0a1e';
-  ctx.fillRect(-19, 65, 14, 38);
-  ctx.fillRect(6, 65, 14, 38);
-  // Boots
-  ctx.fillStyle = '#1a1a1a';
-  ctx.fillRect(-22, 98, 18, 8);
-  ctx.fillRect(5, 98, 18, 8);
-  ctx.fillStyle = '#ff6600';
-  ctx.fillRect(-22, 103, 18, 3);
-  ctx.fillRect(5, 103, 18, 3);
+  if (!zallyImgLoaded) return;
 
-  // Body (leather jacket)
-  ctx.fillStyle = '#111128';
-  ctx.beginPath();
-  ctx.roundRect(-22, 12, 44, 56, 5);
-  ctx.fill();
-  // Jacket highlights
-  ctx.strokeStyle = '#222244';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(-10, 12);
-  ctx.lineTo(-10, 68);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(10, 12);
-  ctx.lineTo(10, 68);
-  ctx.stroke();
-  // Lightning bolt on jacket
-  ctx.fillStyle = '#ff6600';
-  ctx.beginPath();
-  ctx.moveTo(-4, 18);
-  ctx.lineTo(3, 36);
-  ctx.lineTo(-1, 36);
-  ctx.lineTo(6, 58);
-  ctx.lineTo(0, 44);
-  ctx.lineTo(4, 44);
-  ctx.lineTo(-4, 18);
-  ctx.fill();
-
-  // Left arm UP (lightbulb hand)
+  const baseH = 220;
+  const aspect = zallyImg.naturalWidth / zallyImg.naturalHeight;
+  const h = baseH * scale, w = h * aspect;
   ctx.save();
-  ctx.translate(-23, 22);
-  ctx.rotate(-0.7 + arm * 0.12);
-  ctx.fillStyle = '#e8b896';
-  ctx.fillRect(-6, -32, 12, 32);
-  ctx.restore();
-
-  // Lightbulb
-  const lbx = -46, lby = -20 + bob * 0.2;
-  // Outer glow
-  const lgrd = ctx.createRadialGradient(lbx, lby - 4, 0, lbx, lby - 4, 28);
-  lgrd.addColorStop(0, 'rgba(255,230,80,0.55)');
-  lgrd.addColorStop(0.5, 'rgba(255,180,0,0.2)');
-  lgrd.addColorStop(1, 'transparent');
-  ctx.fillStyle = lgrd;
-  ctx.beginPath();
-  ctx.arc(lbx, lby - 4, 28, 0, Math.PI * 2);
-  ctx.fill();
-  // Bulb glass
-  ctx.fillStyle = 'rgba(255,255,200,0.95)';
-  ctx.strokeStyle = '#ffdd00';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(lbx, lby - 7, 11, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-  // Base
-  ctx.fillStyle = '#999';
-  ctx.fillRect(lbx - 5, lby + 3, 10, 7);
-  ctx.fillStyle = '#777';
-  ctx.fillRect(lbx - 4, lby + 5, 8, 2);
-  // Filament glow lines
-  ctx.strokeStyle = 'rgba(255,140,0,0.8)';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(lbx - 3, lby - 2);
-  ctx.lineTo(lbx, lby - 8);
-  ctx.lineTo(lbx + 3, lby - 2);
-  ctx.stroke();
-  // Shine spot
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.beginPath();
-  ctx.arc(lbx - 3, lby - 10, 3, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Right arm (rock fist)
-  ctx.save();
-  ctx.translate(23, 22);
-  ctx.rotate(0.45 + arm * 0.1);
-  ctx.fillStyle = '#e8b896';
-  ctx.fillRect(-6, 0, 12, 28);
-  // Fist knuckles
-  ctx.fillStyle = '#d9a882';
-  ctx.beginPath();
-  ctx.roundRect(-7, 27, 14, 11, 3);
-  ctx.fill();
-  ctx.restore();
-
-  // Neck
-  ctx.fillStyle = '#e8b896';
-  ctx.fillRect(-6, -2, 12, 16);
-
-  // Head
-  ctx.fillStyle = '#e8b896';
-  ctx.beginPath();
-  ctx.ellipse(0, -16, 17, 19, 0, 0, Math.PI * 2);
-  ctx.fill();
-  // Stubble
-  ctx.fillStyle = 'rgba(80,40,20,0.25)';
-  ctx.beginPath();
-  ctx.ellipse(0, -5, 10, 6, 0, 0, Math.PI);
-  ctx.fill();
-
-  // Mohawk / Crest
-  const crests = [
-    {dx: -10, h: 24, col: '#ff0044'},
-    {dx: -5,  h: 32, col: '#ff6600'},
-    {dx:  0,  h: 36, col: '#ccff00'},
-    {dx:  5,  h: 30, col: '#ff6600'},
-    {dx: 10,  h: 22, col: '#ff0044'},
-  ];
-  crests.forEach(c => {
-    ctx.fillStyle = c.col;
-    ctx.beginPath();
-    ctx.moveTo(c.dx - 4, -30);
-    ctx.lineTo(c.dx, -30 - c.h);
-    ctx.lineTo(c.dx + 4, -30);
-    ctx.closePath();
-    ctx.fill();
-    // Tip glow
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
-    ctx.beginPath();
-    ctx.arc(c.dx, -30 - c.h + 2, 2, 0, Math.PI * 2);
-    ctx.fill();
-  });
-
-  // Eyes
-  ctx.fillStyle = '#1a0a00';
-  ctx.beginPath();
-  ctx.ellipse(-7, -18, 4, 4, -0.1, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(7, -18, 4, 4, 0.1, 0, Math.PI * 2);
-  ctx.fill();
-  // Pupils (intense)
-  ctx.fillStyle = '#ff4400';
-  ctx.beginPath();
-  ctx.arc(-7, -18, 2, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(7, -18, 2, 0, Math.PI * 2);
-  ctx.fill();
-  // Eye shine
-  ctx.fillStyle = '#fff';
-  ctx.beginPath();
-  ctx.arc(-6, -19, 1.2, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(8, -19, 1.2, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Eyebrows (angry/rock)
-  ctx.strokeStyle = '#3a1500';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(-12, -24);
-  ctx.lineTo(-4, -21);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(12, -24);
-  ctx.lineTo(4, -21);
-  ctx.stroke();
-
-  // Smirk / mouth
-  ctx.strokeStyle = '#8B4513';
-  ctx.lineWidth = 1.8;
-  ctx.beginPath();
-  ctx.moveTo(-5, -8);
-  ctx.quadraticCurveTo(2, -4, 8, -7);
-  ctx.stroke();
-  // Teeth
-  ctx.fillStyle = '#fffde0';
-  ctx.fillRect(-2, -8, 6, 3);
-
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.shadowBlur = 14;
+  ctx.shadowColor = 'rgba(255,102,0,0.5)';
+  ctx.drawImage(zallyImg, cx - w / 2, cy - h * 0.62 + bob, w, h);
   ctx.restore();
 }
+
 
 // ─── Lanes ───────────────────────────────────────
 function drawLanes() {
@@ -1024,7 +1303,7 @@ function renderMenu(t) {
   ctx.fillText('4 LEVELS  |  70% DIDATTICA  |  30% GIOCO  |  HUMAN IN THE LOOP', W / 2, 198);
 
   // Zally
-  drawZally(W / 2, 390, 1.3, t);
+  drawZally(W / 2, 400, 0.85, t);
 
   // PRESS ENTER (blink)
   if (Math.floor(t / 550) % 2 === 0) {
@@ -1056,14 +1335,6 @@ function renderLevelComplete(t) {
   ctx.fillStyle = '#ff6600';
   ctx.font = '9px "Press Start 2P", monospace';
   ctx.fillText('SCORE +' + game.score, W / 2, H / 2 + 18);
-
-  // Stars row
-  for (let i = 0; i < 3; i++) {
-    const sx = W / 2 - 40 + i * 40;
-    ctx.fillStyle = '#ccff00';
-    ctx.font = '22px serif';
-    ctx.fillText('★', sx, H / 2 + 55);
-  }
 }
 
 function renderTransmitting(t) {
@@ -1111,6 +1382,7 @@ function renderTransmitting(t) {
       if (game.screen === 'TRANSMITTING') {
         game.screen = 'VICTORY';
         victoryOverlay.classList.add('active');
+        playVictory();
       }
     }, 100);
   }
@@ -1167,8 +1439,20 @@ function renderVictory(t) {
   ctx.font = '5.5px "Press Start 2P", monospace';
   ctx.fillText('CHALLENGE COMPLETED: "CREATE AN ANTHEM FOR THE TEAM"', W / 2, 305);
 
-  // Zally small
-  drawZally(W / 2, 450, 0.88, t);
+  // Zally Jump — bouncing celebration
+  if (zallyJumpLoaded) {
+    const aspect = zallyJumpImg.naturalWidth / zallyJumpImg.naturalHeight;
+    const h = 260, w = h * aspect;
+    // Bounce: fast up-down jump loop
+    const bounce = Math.abs(Math.sin(t * 0.004)) * 38;
+    // Subtle left-right sway
+    const sway = Math.sin(t * 0.0022) * 10;
+    // Glow pulse
+    ctx.shadowBlur = 20 + Math.sin(t * 0.005) * 12;
+    ctx.shadowColor = 'rgba(204,255,0,0.7)';
+    ctx.drawImage(zallyJumpImg, W / 2 - w / 2 + sway, 320 - bounce, w, h);
+    ctx.shadowBlur = 0;
+  }
 }
 
 function renderGameplay(ts) {
@@ -1189,8 +1473,9 @@ function renderGameplay(ts) {
       // Check auto-miss
       if (!n.missed && el > n.hitTime + HIT_WINDOW + 100) {
         n.missed = true;
-        game.volumeMix = Math.max(0, game.volumeMix - 1);
-        game.starPower = Math.max(0, game.starPower - 8);
+        playMiss();
+        game.volumeMix = Math.max(0, game.volumeMix - 0.5);
+        game.starPower = Math.max(0, game.starPower - 4);
         game.flashFx = { col: 'rgba(255,0,50,0.25)', a: 0.25 };
         updateHUD();
         if (game.volumeMix <= 0 && !game.levelDone) {
@@ -1217,8 +1502,9 @@ function renderGameplay(ts) {
   ctx.fillRect(0, 0, W * tfrac, 7);
   ctx.shadowBlur = 0;
 
-  // Check end
-  if (el >= GAME_DUR && !game.levelDone) {
+  // End level: 2s after last note OR when GAME_DUR elapsed
+  const lastNoteTime = game.notes.length ? Math.max(...game.notes.map(n => n.hitTime)) : 0;
+  if (!game.levelDone && (el >= lastNoteTime + 800 || el >= GAME_DUR)) {
     game.levelDone = true;
     setTimeout(levelComplete, 600);
   }
@@ -1231,6 +1517,7 @@ function prepareNotes(lvData) {
   game.notes = lvData.notePattern.map(n => ({
     lane: n.l,
     hitTime: n.t,
+    freq: n.f || LANE_FREQS[n.l],
     x: LANES[n.l].x,
     y: -NOTE_R * 2,
     spawned: false,
@@ -1254,7 +1541,11 @@ function handleHit(laneIdx) {
   best.hit = true;
   best.hitAnim = 0;
 
-  const perfect = bestDiff < 30;
+  const perfect = bestDiff < 50;
+  // Level 4 (Eye of Tiger), lane 2 = nota Ab drammatica → power chord che suona più a lungo
+  const punchSustain = (game.levelIndex === 3 && laneIdx === 2)
+    ? (perfect ? 0.7 : 0.55) : undefined;
+  playHit(best.freq, perfect, punchSustain);
   const pts = perfect ? 150 : 100;
   game.score += pts;
   game.totalScore += pts;
@@ -1290,7 +1581,6 @@ function showQuestion(lvIdx) {
   modalContent.innerHTML = `
     <div class="modal-badge">${lv.badge}</div>
     <div class="modal-title">LEVEL ${lv.number}: ${lv.title} — ${lv.subtitle}</div>
-    <div class="modal-scenario">🎸 SCENARIO: ${lv.scenario}</div>
     <div class="modal-question">❓ ${lv.question}</div>
     ${opts}
     <div style="font-size:5.5px;color:#444;margin-top:12px;text-align:center;line-height:2;">
@@ -1351,9 +1641,10 @@ function startGameplay() {
   overlay.classList.remove('active');
   hudEl.classList.add('active');
   touchControls.classList.add('active');
+  replayBtn.classList.remove('active');
   game.screen = 'PLAYING';
   game.score = 0;
-  game.volumeMix = 5;
+  game.volumeMix = 10;
   game.starPower = 0;
   game.levelDone = false;
   game.flashFx = null;
@@ -1361,27 +1652,68 @@ function startGameplay() {
   game.gameStart = performance.now();
   prepareNotes(LEVELS_DATA[game.levelIndex]);
   updateHUD();
+  startBeat();
+  scheduleJumpVocal();
+}
+
+function replayTrack() {
+  stopBeat();
+  game.score = 0;
+  game.volumeMix = 10;
+  game.starPower = 0;
+  game.levelDone = false;
+  game.flashFx = null;
+  game.comboText = null;
+  game.screen = 'PLAYING';
+  game.gameStart = performance.now();
+  prepareNotes(LEVELS_DATA[game.levelIndex]);
+  hudEl.classList.add('active');
+  touchControls.classList.add('active');
+  replayBtn.classList.remove('active');
+  updateHUD();
+  startBeat();
+  scheduleJumpVocal();
+}
+
+function scheduleJumpVocal() {
+  if (game.levelIndex !== 2) return;
+  // "JUMP!" shout sul Sol del giro 2 (6.58s) e del giro 4 (16.78s)
+  [6580, 16780].forEach(delay => {
+    setTimeout(() => {
+      if (game.screen === 'PLAYING' && game.levelIndex === 2) playVocalJump();
+    }, delay);
+  });
 }
 
 function restartLevel() {
+  stopBeat();
   game.flashFx = null;
   game.comboText = null;
   game.screen = 'QUESTION';
   hudEl.classList.remove('active');
   touchControls.classList.remove('active');
+  replayBtn.classList.remove('active');
   showQuestion(game.levelIndex);
 }
 
 function levelComplete() {
+  stopBeat();
+  playLevelComplete();
   game.screen = 'LEVEL_COMPLETE';
   hudEl.classList.remove('active');
   touchControls.classList.remove('active');
+  replayBtn.classList.add('active');
 
   if (game.levelIndex < LEVELS_DATA.length - 1) {
-    game.levelIndex++;
-    setTimeout(() => showQuestion(game.levelIndex), 2200);
+    const doneIdx = game.levelIndex; // keep current index so replayTrack() works
+    setTimeout(() => {
+      game.levelIndex = doneIdx + 1;
+      replayBtn.classList.remove('active');
+      showQuestion(game.levelIndex);
+    }, 2200);
   } else {
     setTimeout(() => {
+      replayBtn.classList.remove('active');
       game.screen = 'TRANSMITTING';
       game.transmitStart = performance.now();
     }, 2200);
@@ -1389,12 +1721,13 @@ function levelComplete() {
 }
 
 function resetGame() {
+  stopBeat();
   game.screen = 'MENU';
   game.levelIndex = 0;
   game.score = 0;
   game.totalScore = 0;
   game.starPower = 0;
-  game.volumeMix = 5;
+  game.volumeMix = 10;
   game.notes = [];
   game.levelDone = false;
   game.flashFx = null;
@@ -1402,9 +1735,11 @@ function resetGame() {
   overlay.classList.remove('active');
   hudEl.classList.remove('active');
   touchControls.classList.remove('active');
+  replayBtn.classList.remove('active');
   victoryOverlay.classList.remove('active');
   updateHUD();
 }
+
 
 // ═══════════════════════════════════════════════
 //  MAIN LOOP
